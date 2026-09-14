@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { X, Plane, Clock, ShieldCheck, Luggage, ArrowRight } from "lucide-react";
 import { Currency, FlightOffer } from "@/types";
 import { formatDuration, formatFlightDate, formatFlightTime, formatMoney } from "@/lib/utils";
@@ -18,27 +18,46 @@ export const FareRulesModal: React.FC<FareRulesModalProps> = ({
   currency = "USD",
   onClose,
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-canvas rounded-xl border border-hairline shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto touch-scroll"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="bg-canvas rounded-xl border border-hairline shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-auto"
+      >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-hairline flex items-center justify-between bg-surface-soft">
+        <div className="px-5 sm:px-6 py-4 border-b border-hairline flex items-center justify-between bg-surface-soft">
           <div className="flex items-center space-x-2">
-            <Plane className="w-5 h-5 text-primary" />
-            <h3 className="font-bold text-base text-ink font-sans">
+            <Plane className="w-5 h-5 text-primary flex-shrink-0" />
+            <h3 id="modal-title" className="font-bold text-sm sm:text-base text-ink font-sans">
               Flight Itinerary & Fare Conditions
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-pill bg-canvas text-muted hover:text-ink flex items-center justify-center transition-colors"
+            aria-label="Close modal"
+            className="w-8 h-8 rounded-pill bg-canvas text-muted hover:text-ink flex items-center justify-center transition-colors min-h-[32px]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-6 max-h-[80vh] overflow-y-auto touch-scroll">
           {/* Segments Timeline */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted mb-4">

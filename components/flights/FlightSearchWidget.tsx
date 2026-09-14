@@ -66,18 +66,18 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
     <form
       action="javascript:void(0);"
       onSubmit={handleSearchSubmit}
-      className="w-full bg-canvas rounded-xl p-6 sm:p-8 border border-hairline shadow-soft-drop"
+      className="w-full bg-canvas rounded-xl p-4 sm:p-8 border border-hairline shadow-soft-drop"
     >
-      {/* Top Filter Bar: Trip Type & Cabin Class */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-hairline">
+      {/* Top Filter Bar: Trip Type, Cabin Class, & Passengers */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-5 border-b border-hairline">
         {/* Trip type toggle pills */}
-        <div className="inline-flex p-1 bg-surface-strong rounded-pill">
+        <div className="inline-flex p-1 bg-surface-strong rounded-pill self-start">
           <button
             type="button"
             onClick={() => setTripType("ROUND_TRIP")}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-pill transition-all ${
+            className={`px-3.5 sm:px-4 py-2 text-xs font-semibold rounded-pill transition-all min-h-[36px] ${
               tripType === "ROUND_TRIP"
-                ? "bg-canvas text-ink shadow-sm"
+                ? "bg-canvas text-ink shadow-sm font-bold"
                 : "text-muted hover:text-ink"
             }`}
           >
@@ -86,9 +86,9 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
           <button
             type="button"
             onClick={() => setTripType("ONE_WAY")}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-pill transition-all ${
+            className={`px-3.5 sm:px-4 py-2 text-xs font-semibold rounded-pill transition-all min-h-[36px] ${
               tripType === "ONE_WAY"
-                ? "bg-canvas text-ink shadow-sm"
+                ? "bg-canvas text-ink shadow-sm font-bold"
                 : "text-muted hover:text-ink"
             }`}
           >
@@ -97,12 +97,13 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
         </div>
 
         {/* Cabin Class & Passenger Dropdowns */}
-        <div className="flex items-center space-x-3 text-xs">
+        <div className="flex items-center space-x-2 sm:space-x-3 text-xs">
           {/* Cabin Class */}
           <select
             value={cabinClass}
             onChange={(e) => setCabinClass(e.target.value as CabinClass)}
-            className="h-9 px-3 bg-surface-strong text-ink font-semibold rounded-pill border-none outline-none cursor-pointer hover:bg-hairline transition-colors"
+            className="h-10 px-3 bg-surface-strong text-ink font-semibold rounded-pill border-none outline-none cursor-pointer hover:bg-hairline transition-colors flex-1 sm:flex-initial"
+            aria-label="Cabin Class"
           >
             <option value="ECONOMY">Economy</option>
             <option value="PREMIUM_ECONOMY">Premium Economy</option>
@@ -111,20 +112,22 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
           </select>
 
           {/* Passenger Selector Popover */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <button
               type="button"
               onClick={() => setPaxOpen(!paxOpen)}
-              className="h-9 px-3 bg-surface-strong text-ink font-semibold rounded-pill flex items-center space-x-1.5 hover:bg-hairline transition-colors"
+              aria-expanded={paxOpen}
+              aria-label="Select passengers"
+              className="h-10 px-3 bg-surface-strong text-ink font-semibold rounded-pill flex items-center justify-center space-x-1.5 hover:bg-hairline transition-colors w-full sm:w-auto"
             >
-              <Users className="w-3.5 h-3.5 text-primary" />
-              <span>
+              <Users className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+              <span className="truncate">
                 {totalPassengers} Traveler{totalPassengers > 1 ? "s" : ""}
               </span>
             </button>
 
             {paxOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-canvas rounded-xl border border-hairline shadow-2xl p-4 z-50 space-y-4">
+              <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-canvas rounded-xl border border-hairline shadow-2xl p-4 z-50 space-y-4">
                 <div className="flex items-center justify-between text-xs">
                   <div>
                     <span className="font-bold text-ink block">Adults</span>
@@ -135,16 +138,18 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       type="button"
                       disabled={adults <= 1}
                       onClick={() => setAdults(adults - 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40"
+                      aria-label="Decrease adults"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-5 text-center font-mono font-bold">{adults}</span>
+                    <span className="w-6 text-center font-mono font-bold">{adults}</span>
                     <button
                       type="button"
                       disabled={adults >= 9}
                       onClick={() => setAdults(adults + 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink"
+                      aria-label="Increase adults"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -161,16 +166,18 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       type="button"
                       disabled={childrenCount <= 0}
                       onClick={() => setChildrenCount(childrenCount - 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40"
+                      aria-label="Decrease children"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-5 text-center font-mono font-bold">{childrenCount}</span>
+                    <span className="w-6 text-center font-mono font-bold">{childrenCount}</span>
                     <button
                       type="button"
                       disabled={childrenCount >= 8}
                       onClick={() => setChildrenCount(childrenCount + 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink"
+                      aria-label="Increase children"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -187,16 +194,18 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       type="button"
                       disabled={infants <= 0}
                       onClick={() => setInfants(infants - 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40"
+                      aria-label="Decrease infants"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-5 text-center font-mono font-bold">{infants}</span>
+                    <span className="w-6 text-center font-mono font-bold">{infants}</span>
                     <button
                       type="button"
                       disabled={infants >= adults}
                       onClick={() => setInfants(infants + 1)}
-                      className="w-7 h-7 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40"
+                      aria-label="Increase infants"
+                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -207,7 +216,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                   type="button"
                   variant="secondary-light"
                   size="sm"
-                  className="w-full"
+                  className="w-full min-h-[40px]"
                   onClick={() => setPaxOpen(false)}
                 >
                   Done
@@ -219,41 +228,45 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
       </div>
 
       {/* Main Grid: Origin, Swap, Destination, Dates */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-6 items-end">
-        {/* Origin Airport */}
-        <div className="md:col-span-4">
-          <AirportAutocomplete
-            label="From (Origin)"
-            value={originCode}
-            excludeCode={destinationCode}
-            onChange={(a) => setOriginCode(a.code)}
-          />
-        </div>
+      <div className="pt-5 space-y-4 md:space-y-0 md:grid md:grid-cols-12 md:gap-3 md:items-end">
+        {/* Origin & Destination with Integrated Responsive Swap */}
+        <div className="md:col-span-9 relative grid grid-cols-1 sm:grid-cols-11 gap-3 sm:gap-2 items-end">
+          {/* Origin Airport */}
+          <div className="sm:col-span-5">
+            <AirportAutocomplete
+              label="From (Origin)"
+              value={originCode}
+              excludeCode={destinationCode}
+              onChange={(a) => setOriginCode(a.code)}
+            />
+          </div>
 
-        {/* Swap Button */}
-        <div className="md:col-span-1 flex justify-center pb-1">
-          <button
-            type="button"
-            onClick={swapAirports}
-            title="Swap Origin & Destination"
-            className="w-10 h-10 rounded-pill bg-surface-strong hover:bg-hairline text-ink flex items-center justify-center transition-transform hover:rotate-180 duration-300"
-          >
-            <ArrowLeftRight className="w-4 h-4 text-primary" />
-          </button>
-        </div>
+          {/* Swap Button (Smart Centered on both Mobile and Desktop) */}
+          <div className="sm:col-span-1 flex justify-center items-center py-1 sm:pb-2">
+            <button
+              type="button"
+              onClick={swapAirports}
+              title="Swap Origin & Destination"
+              aria-label="Swap Origin & Destination"
+              className="w-10 h-10 rounded-pill bg-surface-strong hover:bg-hairline active:bg-primary/20 text-ink flex items-center justify-center transition-transform hover:rotate-180 duration-300 shadow-sm border border-hairline"
+            >
+              <ArrowLeftRight className="w-4 h-4 text-primary" />
+            </button>
+          </div>
 
-        {/* Destination Airport */}
-        <div className="md:col-span-4">
-          <AirportAutocomplete
-            label="To (Destination)"
-            value={destinationCode}
-            excludeCode={originCode}
-            onChange={(a) => setDestinationCode(a.code)}
-          />
+          {/* Destination Airport */}
+          <div className="sm:col-span-5">
+            <AirportAutocomplete
+              label="To (Destination)"
+              value={destinationCode}
+              excludeCode={originCode}
+              onChange={(a) => setDestinationCode(a.code)}
+            />
+          </div>
         </div>
 
         {/* Departure Date */}
-        <div className={`md:col-span-${tripType === "ROUND_TRIP" ? "3" : "3"}`}>
+        <div className="md:col-span-3">
           <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
             Departure Date
           </label>
@@ -266,7 +279,8 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                 setDepartureDate(e.target.value);
                 if (returnDate < e.target.value) setReturnDate(e.target.value);
               }}
-              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
+              aria-label="Departure Date"
             />
           </div>
         </div>
@@ -284,23 +298,24 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
               min={departureDate}
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
-              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
+              aria-label="Return Date"
             />
           </div>
-          <div className="md:col-span-6 flex items-end">
+          <div className="md:col-span-6 flex items-end pt-2 md:pt-0">
             <Button
               type="submit"
               disabled={isLoading}
               variant="pill-cta"
-              className="w-full"
+              className="w-full min-h-[56px] text-base"
             >
               {isLoading ? (
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center justify-center space-x-2">
                   <Sparkles className="w-5 h-5 animate-spin" />
                   <span>Searching Live Airline Content...</span>
                 </span>
               ) : (
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center justify-center space-x-2">
                   <Search className="w-5 h-5" />
                   <span>Search Flights</span>
                 </span>
@@ -316,9 +331,19 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
             type="submit"
             disabled={isLoading}
             variant="pill-cta"
-            className="w-full sm:w-auto px-10"
+            className="w-full sm:w-auto px-10 min-h-[52px] text-base"
           >
-            {isLoading ? "Searching Flights..." : "Search Flights"}
+            {isLoading ? (
+              <span className="flex items-center justify-center space-x-2">
+                <Sparkles className="w-5 h-5 animate-spin" />
+                <span>Searching Flights...</span>
+              </span>
+            ) : (
+              <span className="flex items-center justify-center space-x-2">
+                <Search className="w-5 h-5" />
+                <span>Search Flights</span>
+              </span>
+            )}
           </Button>
         </div>
       )}

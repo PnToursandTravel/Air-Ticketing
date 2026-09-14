@@ -27,15 +27,24 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click or Escape key
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const results = searchAirports(searchQuery).filter((a) => a.code !== excludeCode);
@@ -51,8 +60,10 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
       <button
         type="button"
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
         className={cn(
-          "w-full h-14 px-4 py-2 bg-canvas text-left rounded-md border border-hairline transition-all duration-150 flex items-center justify-between group hover:border-muted",
+          "w-full h-14 px-4 py-2 bg-canvas text-left rounded-md border border-hairline transition-all duration-150 flex items-center justify-between group hover:border-muted min-h-[56px]",
           open && "border-primary ring-2 ring-primary/20",
           error && "border-semantic-down"
         )}
@@ -81,7 +92,7 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
 
       {/* Popover list */}
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-full sm:w-80 bg-canvas rounded-xl border border-hairline shadow-2xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-full max-w-[calc(100vw-2rem)] sm:w-80 bg-canvas rounded-xl border border-hairline shadow-2xl z-50 overflow-hidden">
           {/* Search input header */}
           <div className="p-3 border-b border-hairline bg-surface-soft flex items-center space-x-2">
             <Search className="w-4 h-4 text-muted flex-shrink-0" />
@@ -91,12 +102,13 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Type city, country or 3-letter IATA..."
-              className="w-full bg-transparent text-xs text-ink placeholder:text-muted outline-none"
+              className="w-full bg-transparent text-xs text-ink placeholder:text-muted outline-none h-8"
+              aria-label="Filter airports by city or code"
             />
           </div>
 
           {/* Results list */}
-          <div className="max-h-60 overflow-y-auto divide-y divide-hairline-soft">
+          <div className="max-h-60 overflow-y-auto divide-y divide-hairline-soft touch-scroll" role="listbox">
             {results.length === 0 ? (
               <div className="p-4 text-center text-xs text-muted">No airports found</div>
             ) : (
@@ -110,16 +122,16 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
                     setSearchQuery("");
                   }}
                   className={cn(
-                    "w-full text-left p-3 hover:bg-surface-soft transition-colors flex items-center justify-between group",
+                    "w-full text-left p-3 hover:bg-surface-soft transition-colors flex items-center justify-between group min-h-[44px]",
                     airport.code === value && "bg-surface-soft"
                   )}
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="font-mono font-bold text-xs bg-surface-strong px-2 py-1 rounded text-ink group-hover:bg-primary group-hover:text-on-primary transition-colors">
+                    <span className="font-mono font-bold text-xs bg-surface-strong px-2 py-1 rounded text-ink group-hover:bg-primary group-hover:text-on-primary transition-colors flex-shrink-0">
                       {airport.code}
                     </span>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-semibold text-ink group-hover:text-primary">
+                    <div className="flex flex-col truncate">
+                      <span className="text-xs font-semibold text-ink group-hover:text-primary truncate">
                         {airport.city}, {airport.country}
                       </span>
                       <span className="text-[10px] text-muted truncate max-w-[180px]">

@@ -81,7 +81,7 @@ export default function MyTripsPage() {
               />
             </div>
 
-            <Button type="submit" variant="primary" size="md" className="w-full sm:w-auto">
+            <Button type="submit" variant="primary" size="md" className="w-full sm:w-auto min-h-[44px]">
               Find Reservation
             </Button>
           </form>
@@ -128,7 +128,7 @@ export default function MyTripsPage() {
                   {formatMoney(searchResult.priceSnapshot.totalMinor, searchResult.currency)}
                 </span>
                 <Link href={`/booking/${searchResult.reference}`}>
-                  <Button variant="secondary-light" size="sm">
+                  <Button variant="secondary-light" size="sm" className="min-h-[44px]">
                     View Full E-Ticket
                   </Button>
                 </Link>
@@ -182,12 +182,12 @@ export default function MyTripsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center justify-between sm:justify-end space-x-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-hairline">
                     <span className="font-mono font-bold text-base text-ink">
                       {formatMoney(b.priceSnapshot.totalMinor, b.currency)}
                     </span>
                     <Link href={`/booking/${b.reference}`}>
-                      <Button variant="secondary-light" size="sm">
+                      <Button variant="secondary-light" size="sm" className="min-h-[44px]">
                         View Details
                       </Button>
                     </Link>

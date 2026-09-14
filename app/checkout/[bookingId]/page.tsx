@@ -287,14 +287,14 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Tabs */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 xs:grid-cols-3 gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("CARD")}
-                  className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center space-y-2 ${
+                  className={`p-3.5 sm:p-4 rounded-xl border text-center transition-all flex flex-col items-center justify-center space-y-1.5 min-h-[64px] ${
                     paymentMethod === "CARD"
                       ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-hairline hover:bg-surface-soft"
+                      : "border-hairline hover:bg-surface-soft active:bg-hairline"
                   }`}
                 >
                   <CreditCard className="w-5 h-5 text-primary" />
@@ -305,10 +305,10 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("MOMO")}
-                  className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center space-y-2 ${
+                  className={`p-3.5 sm:p-4 rounded-xl border text-center transition-all flex flex-col items-center justify-center space-y-1.5 min-h-[64px] ${
                     paymentMethod === "MOMO"
                       ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-hairline hover:bg-surface-soft"
+                      : "border-hairline hover:bg-surface-soft active:bg-hairline"
                   }`}
                 >
                   <Smartphone className="w-5 h-5 text-primary" />
@@ -319,10 +319,10 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("BANK")}
-                  className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center space-y-2 ${
+                  className={`p-3.5 sm:p-4 rounded-xl border text-center transition-all flex flex-col items-center justify-center space-y-1.5 min-h-[64px] ${
                     paymentMethod === "BANK"
                       ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-hairline hover:bg-surface-soft"
+                      : "border-hairline hover:bg-surface-soft active:bg-hairline"
                   }`}
                 >
                   <Building className="w-5 h-5 text-primary" />
@@ -344,7 +344,7 @@ export default function CheckoutPage() {
                     defaultValue="4111 •••• •••• 8829"
                     placeholder="16-digit card number"
                   />
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <TextInput label="Expiry" defaultValue="12/28" placeholder="MM/YY" />
                     <TextInput label="CVV / CVC" defaultValue="•••" placeholder="3 digits" />
                   </div>
@@ -373,15 +373,15 @@ export default function CheckoutPage() {
             </Card>
 
             {/* Terms checkbox */}
-            <div className="flex items-start space-x-3 text-xs text-body">
+            <div className="flex items-start space-x-3 text-xs text-body p-1">
               <input
                 type="checkbox"
                 id="terms"
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="mt-0.5 rounded text-primary focus:ring-primary h-4 w-4"
+                className="mt-0.5 rounded text-primary focus:ring-primary h-5 w-5 flex-shrink-0 cursor-pointer"
               />
-              <label htmlFor="terms">
+              <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
                 I confirm the passenger names match their travel documents. I agree to the flight carriage conditions, airline fare rules, and cancellation policies.
               </label>
             </div>
@@ -391,6 +391,25 @@ export default function CheckoutPage() {
                 {errorMsg}
               </div>
             )}
+
+            {/* Mobile Primary Submit Button (< lg) */}
+            <div className="block lg:hidden pt-2">
+              <Button
+                type="submit"
+                variant="pill-cta"
+                disabled={processingPayment}
+                className="w-full min-h-[52px] text-base"
+              >
+                {processingPayment ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <Sparkles className="w-4 h-4 animate-spin" />
+                    <span>Confirming & Issuing Ticket...</span>
+                  </span>
+                ) : (
+                  <span>Pay & Issue E-Ticket • {formatMoney(booking.priceSnapshot.totalMinor, booking.currency)}</span>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Right Column: Order Summary */}

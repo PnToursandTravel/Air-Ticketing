@@ -236,8 +236,8 @@ export default function AgentDashboardPage() {
           </div>
 
           <div className="border border-hairline rounded-xl overflow-hidden shadow-soft-drop bg-canvas">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
                   <tr>
                     <th className="p-4">Transaction ID</th>

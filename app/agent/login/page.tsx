@@ -180,7 +180,7 @@ export default function AgentLoginPage() {
                     onChange={(e) => setRegAgencyName(e.target.value)}
                     placeholder="e.g. Skyline Travel Bureau Ltd"
                   />
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <TextInput
                       label="IATA / TIDS Number"
                       value={regIata}
@@ -211,7 +211,7 @@ export default function AgentLoginPage() {
                     onChange={(e) => setRegPhone(e.target.value)}
                     placeholder="+256 785360444"
                   />
-                  <Button type="submit" variant="pill-cta" className="w-full">
+                  <Button type="submit" variant="pill-cta" className="w-full min-h-[44px]">
                     Submit Agency Application
                   </Button>
                 </>

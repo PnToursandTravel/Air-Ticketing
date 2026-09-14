@@ -219,23 +219,23 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-normal font-sans tracking-tight text-on-dark leading-[1.04]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-normal font-sans tracking-tight text-on-dark leading-[1.08]">
                 Air travel, booked with <span className="text-primary font-medium">quiet precision.</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-on-dark-soft max-w-xl leading-relaxed">
+              <p className="text-sm sm:text-base lg:text-lg text-on-dark-soft max-w-xl leading-relaxed">
                 Direct airline flight search, corporate travel management, and instant electronic ticket receipts. Direct access to international carriers with guaranteed PNR issuance.
               </p>
 
               {/* Traveler CTAs */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <a href="#flight-search">
-                  <Button variant="pill-cta">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <a href="#flight-search" className="w-full sm:w-auto">
+                  <Button variant="pill-cta" className="w-full justify-center min-h-[48px]">
                     Search Flights Now
                   </Button>
                 </a>
-                <a href="#featured-deals">
-                  <Button variant="outline-on-dark" size="lg">
+                <a href="#featured-deals" className="w-full sm:w-auto">
+                  <Button variant="outline-on-dark" size="lg" className="w-full justify-center min-h-[48px]">
                     Explore Top Deals
                   </Button>
                 </a>
@@ -244,10 +244,10 @@ export default function HomePage() {
 
             {/* Right Hero: Layered Product-UI Mockup Card (#16181c) */}
             <div className="lg:col-span-5 relative">
-              <div className="bg-surface-dark-elevated rounded-xl p-6 sm:p-8 border border-white/15 shadow-2xl space-y-6 transform hover:-translate-y-1 transition-transform">
+              <div className="bg-surface-dark-elevated rounded-xl p-5 sm:p-8 border border-white/15 shadow-2xl space-y-5 sm:space-y-6 transform hover:-translate-y-1 transition-transform">
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-pill bg-primary/20 flex items-center justify-center text-primary font-mono font-bold text-xs">
+                    <div className="w-8 h-8 rounded-pill bg-primary/20 flex items-center justify-center text-primary font-mono font-bold text-xs flex-shrink-0">
                       EK
                     </div>
                     <div>
@@ -260,8 +260,8 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-3 items-center text-center">
                   <div className="text-left">
-                    <span className="font-mono text-2xl font-bold text-on-dark block">15:30</span>
-                    <span className="text-xs font-mono text-on-dark-soft uppercase">EBB • Entebbe</span>
+                    <span className="font-mono text-xl sm:text-2xl font-bold text-on-dark block">15:30</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-on-dark-soft uppercase">EBB • Entebbe</span>
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-mono text-on-dark-soft">5h 15m</span>
@@ -269,8 +269,8 @@ export default function HomePage() {
                     <span className="text-[10px] text-semantic-up font-semibold">Direct Route</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-mono text-2xl font-bold text-on-dark block">21:45</span>
-                    <span className="text-xs font-mono text-on-dark-soft uppercase">DXB • Dubai</span>
+                    <span className="font-mono text-xl sm:text-2xl font-bold text-on-dark block">21:45</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-on-dark-soft uppercase">DXB • Dubai</span>
                   </div>
                 </div>
 
@@ -282,20 +282,20 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Quick Popular Route Chips */}
+          {/* Quick Popular Route Chips (Smooth Touch Flick on Mobile) */}
           <div className="pt-2 space-y-2">
             <span className="text-xs uppercase font-mono tracking-wider text-on-dark-soft block">
               Popular Flight Routes
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-nowrap sm:flex-wrap overflow-x-auto pb-2 sm:pb-0 touch-scroll gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
               {popularRoutes.map((r) => (
                 <button
                   key={`${r.from}-${r.to}`}
                   onClick={() => handleQuickRoute(r.from, r.to)}
-                  className="px-3.5 py-1.5 rounded-pill bg-surface-dark-elevated hover:bg-white/10 text-on-dark text-xs font-medium border border-white/15 transition-colors flex items-center space-x-1.5 group"
+                  className="px-3.5 py-1.5 rounded-pill bg-surface-dark-elevated hover:bg-white/10 text-on-dark text-xs font-medium border border-white/15 transition-colors flex items-center space-x-1.5 group flex-shrink-0 min-h-[36px]"
                 >
-                  <Compass className="w-3 h-3 text-primary group-hover:rotate-45 transition-transform" />
-                  <span>{r.label}</span>
+                  <Compass className="w-3 h-3 text-primary group-hover:rotate-45 transition-transform flex-shrink-0" />
+                  <span className="whitespace-nowrap">{r.label}</span>
                 </button>
               ))}
             </div>
@@ -504,7 +504,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[
             { name: "Emirates", code: "EK", hub: "Dubai (DXB)" },
             { name: "Uganda Airlines", code: "UR", hub: "Entebbe (EBB)" },
@@ -517,7 +517,7 @@ export default function HomePage() {
           ].map((airline) => (
             <div
               key={airline.code}
-              className="bg-canvas p-6 rounded-xl border border-hairline hover:border-primary/40 transition-all flex items-center space-x-3.5 shadow-soft-drop"
+              className="bg-canvas p-4 sm:p-6 rounded-xl border border-hairline hover:border-primary/40 transition-all flex items-center space-x-3.5 shadow-soft-drop"
             >
               <div className="w-10 h-10 rounded-pill bg-surface-strong flex items-center justify-center font-mono font-bold text-xs text-primary">
                 {airline.code}

@@ -178,33 +178,35 @@ export default function BookingConfirmationPage() {
                       <Badge variant="pill">{seg.cabinClass}</Badge>
                     </div>
 
-                    <div className="grid grid-cols-3 items-center gap-4 text-xs">
+                    <div className="grid grid-cols-3 items-center gap-2 sm:gap-4 text-xs">
                       <div>
-                        <span className="text-muted block text-[11px]">Depart</span>
-                        <span className="font-mono text-xl font-bold text-ink block">
+                        <span className="text-muted block text-[10px] sm:text-[11px]">Depart</span>
+                        <span className="font-mono text-lg sm:text-xl font-bold text-ink block">
                           {formatFlightTime(seg.departureTime)}
                         </span>
                         <span className="font-bold text-body">{seg.originAirport}</span>
-                        <span className="text-muted block text-[10px]">
+                        <span className="text-muted block text-[9px] sm:text-[10px]">
                           {formatFlightDate(seg.departureTime)}
                         </span>
                       </div>
 
-                      <div className="flex flex-col items-center justify-center text-center">
-                        <span className="text-[10px] font-mono text-muted">
+                      <div className="flex flex-col items-center justify-center text-center px-0.5">
+                        <span className="text-[9px] sm:text-[10px] font-mono text-muted">
                           {formatDuration(seg.durationMinutes)}
                         </span>
-                        <ArrowRight className="w-4 h-4 text-primary my-1" />
-                        <span className="text-[10px] text-muted font-mono">{seg.aircraft}</span>
+                        <ArrowRight className="w-4 h-4 text-primary my-0.5" />
+                        <span className="text-[9px] sm:text-[10px] text-muted font-mono truncate max-w-[80px] sm:max-w-none">
+                          {seg.aircraft}
+                        </span>
                       </div>
 
                       <div className="text-right">
-                        <span className="text-muted block text-[11px]">Arrive</span>
-                        <span className="font-mono text-xl font-bold text-ink block">
+                        <span className="text-muted block text-[10px] sm:text-[11px]">Arrive</span>
+                        <span className="font-mono text-lg sm:text-xl font-bold text-ink block">
                           {formatFlightTime(seg.arrivalTime)}
                         </span>
                         <span className="font-bold text-body">{seg.destinationAirport}</span>
-                        <span className="text-muted block text-[10px]">
+                        <span className="text-muted block text-[9px] sm:text-[10px]">
                           {formatFlightDate(seg.arrivalTime)}
                         </span>
                       </div>
@@ -215,37 +217,37 @@ export default function BookingConfirmationPage() {
             </div>
 
             {/* Simulated Barcode / QR Section */}
-            <div className="pt-4 border-t border-hairline flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center space-x-4">
+            <div className="pt-4 border-t border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center space-x-3 sm:space-x-4 max-w-full overflow-hidden">
                 {/* Barcode visual lines */}
-                <div className="h-12 flex items-center space-x-1 font-mono text-[9px] text-muted">
-                  <div className="w-1 h-12 bg-ink"></div>
-                  <div className="w-2 h-12 bg-ink"></div>
-                  <div className="w-0.5 h-12 bg-ink"></div>
-                  <div className="w-1.5 h-12 bg-ink"></div>
-                  <div className="w-1 h-12 bg-ink"></div>
-                  <div className="w-3 h-12 bg-ink"></div>
-                  <div className="w-1 h-12 bg-ink"></div>
-                  <div className="w-2 h-12 bg-ink"></div>
-                  <div className="w-0.5 h-12 bg-ink"></div>
-                  <div className="w-1.5 h-12 bg-ink"></div>
-                  <div className="w-1 h-12 bg-ink"></div>
-                  <div className="w-2.5 h-12 bg-ink"></div>
-                  <div className="w-0.5 h-12 bg-ink"></div>
+                <div className="h-10 sm:h-12 flex items-center space-x-0.5 sm:space-x-1 font-mono text-[9px] text-muted flex-shrink-0">
+                  <div className="w-1 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-2 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-0.5 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-1.5 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-1 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-2 sm:w-3 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-1 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-2 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-0.5 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-1.5 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-1 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-2 h-10 sm:h-12 bg-ink"></div>
+                  <div className="w-0.5 h-10 sm:h-12 bg-ink"></div>
                 </div>
-                <div className="text-xs">
-                  <span className="font-mono font-bold text-ink block">
+                <div className="text-xs truncate">
+                  <span className="font-mono font-bold text-ink block truncate text-[11px] sm:text-xs">
                     ELECTRONIC TICKET PASS
                   </span>
-                  <span className="text-muted font-mono text-[10px]">
+                  <span className="text-muted font-mono text-[9px] sm:text-[10px] truncate block">
                     ISSUED BY PN TOURS & TRAVEL LTD
                   </span>
                 </div>
               </div>
 
-              <div className="text-right text-xs">
-                <span className="text-muted block text-[11px]">Total Paid:</span>
-                <span className="font-mono font-bold text-lg text-primary">
+              <div className="text-left sm:text-right text-xs self-end sm:self-auto">
+                <span className="text-muted block text-[10px] sm:text-[11px]">Total Paid:</span>
+                <span className="font-mono font-bold text-base sm:text-lg text-primary">
                   {formatMoney(booking.priceSnapshot.totalMinor, booking.currency)}
                 </span>
               </div>

@@ -50,6 +50,16 @@ export default function AdminDashboardPage() {
   const [updatingConfig, setUpdatingConfig] = useState(false);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && editingConfig) {
+        setEditingConfig(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [editingConfig]);
+
+  useEffect(() => {
     async function checkAuthAndLoadData() {
       try {
         const res = await fetch("/api/v1/auth/me");
@@ -253,8 +263,8 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="border border-hairline rounded-xl overflow-hidden shadow-soft-drop bg-canvas">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[680px] text-left text-xs">
                 <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
                   <tr>
                     <th className="p-4">Category</th>
@@ -327,50 +337,52 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="border border-hairline rounded-xl overflow-hidden shadow-soft-drop bg-canvas">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
-                <tr>
-                  <th className="p-4">Priority</th>
-                  <th className="p-4">Rule Name</th>
-                  <th className="p-4">Scope</th>
-                  <th className="p-4">Type</th>
-                  <th className="p-4">Markup Amount</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-hairline">
-                {rules.map((rule) => (
-                  <tr key={rule.id} className="hover:bg-surface-soft transition-colors">
-                    <td className="p-4 font-mono font-bold text-ink">{rule.priority}</td>
-                    <td className="p-4 font-bold text-ink">{rule.name}</td>
-                    <td className="p-4">
-                      <Badge variant="pill">{rule.appliesTo} {rule.targetCode ? `(${rule.targetCode})` : ""}</Badge>
-                    </td>
-                    <td className="p-4 font-mono">{rule.type}</td>
-                    <td className="p-4 font-mono font-bold text-primary">
-                      {rule.type === "FIXED"
-                        ? `$${(rule.amountMinorOrPercent / 100).toFixed(2)}`
-                        : `${rule.amountMinorOrPercent}%`}
-                    </td>
-                    <td className="p-4">
-                      <Badge variant={rule.active ? "semantic-up" : "pill"}>
-                        {rule.active ? "ACTIVE" : "DISABLED"}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-right">
-                      <Button
-                        variant="secondary-light"
-                        size="sm"
-                        onClick={() => toggleRuleActive(rule.id)}
-                      >
-                        {rule.active ? "Disable" : "Enable"}
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[700px] text-left text-xs">
+                <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
+                  <tr>
+                    <th className="p-4">Priority</th>
+                    <th className="p-4">Rule Name</th>
+                    <th className="p-4">Scope</th>
+                    <th className="p-4">Type</th>
+                    <th className="p-4">Markup Amount</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-hairline">
+                  {rules.map((rule) => (
+                    <tr key={rule.id} className="hover:bg-surface-soft transition-colors">
+                      <td className="p-4 font-mono font-bold text-ink">{rule.priority}</td>
+                      <td className="p-4 font-bold text-ink">{rule.name}</td>
+                      <td className="p-4">
+                        <Badge variant="pill">{rule.appliesTo} {rule.targetCode ? `(${rule.targetCode})` : ""}</Badge>
+                      </td>
+                      <td className="p-4 font-mono">{rule.type}</td>
+                      <td className="p-4 font-mono font-bold text-primary">
+                        {rule.type === "FIXED"
+                          ? `$${(rule.amountMinorOrPercent / 100).toFixed(2)}`
+                          : `${rule.amountMinorOrPercent}%`}
+                      </td>
+                      <td className="p-4">
+                        <Badge variant={rule.active ? "semantic-up" : "pill"}>
+                          {rule.active ? "ACTIVE" : "DISABLED"}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-right">
+                        <Button
+                          variant="secondary-light"
+                          size="sm"
+                          onClick={() => toggleRuleActive(rule.id)}
+                        >
+                          {rule.active ? "Disable" : "Enable"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -381,83 +393,92 @@ export default function AdminDashboardPage() {
           </h3>
 
           <div className="border border-hairline rounded-xl overflow-hidden shadow-soft-drop bg-canvas">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
-                <tr>
-                  <th className="p-4">Reference</th>
-                  <th className="p-4">Traveler</th>
-                  <th className="p-4">Route</th>
-                  <th className="p-4">Total</th>
-                  <th className="p-4">Booking Status</th>
-                  <th className="p-4">Ticket Status</th>
-                  <th className="p-4 text-right">Operations</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-hairline">
-                {bookings.map((b) => (
-                  <tr key={b.reference} className="hover:bg-surface-soft transition-colors">
-                    <td className="p-4 font-mono font-bold text-ink">
-                      #{b.reference}
-                      {b.pnr && <span className="block text-[10px] text-muted font-normal">PNR: {b.pnr}</span>}
-                    </td>
-                    <td className="p-4 font-sans text-body">
-                      {b.passengers[0].firstName} {b.passengers[0].lastName}
-                    </td>
-                    <td className="p-4 font-mono">
-                      {b.offerSnapshot.outboundSegments[0].originAirport} → {b.offerSnapshot.outboundSegments[0].destinationAirport}
-                    </td>
-                    <td className="p-4 font-mono font-bold text-ink">
-                      {formatMoney(b.priceSnapshot.totalMinor, b.currency)}
-                    </td>
-                    <td className="p-4">
-                      <Badge variant={b.status === "TICKETED" ? "semantic-up" : "pill"}>
-                        {b.status}
-                      </Badge>
-                    </td>
-                    <td className="p-4">
-                      <Badge variant={b.ticketStatus === "ISSUED" ? "semantic-up" : "pill"}>
-                        {b.ticketStatus}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-right space-x-2">
-                      {b.status !== "TICKETED" && (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          disabled={retryingRef === b.reference}
-                          onClick={() => handleRetryTicketing(b.reference)}
-                        >
-                          {retryingRef === b.reference ? "Issuing..." : "Retry Ticketing"}
-                        </Button>
-                      )}
-                      <Link href={`/booking/${b.reference}`}>
-                        <Button variant="secondary-light" size="sm">
-                          View Slip
-                        </Button>
-                      </Link>
-                    </td>
+            <div className="overflow-x-auto touch-scroll">
+              <table className="w-full min-w-[760px] text-left text-xs">
+                <thead className="bg-surface-soft border-b border-hairline text-muted uppercase tracking-wider font-mono">
+                  <tr>
+                    <th className="p-4">Reference</th>
+                    <th className="p-4">Traveler</th>
+                    <th className="p-4">Route</th>
+                    <th className="p-4">Total</th>
+                    <th className="p-4">Booking Status</th>
+                    <th className="p-4">Ticket Status</th>
+                    <th className="p-4 text-right">Operations</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-hairline">
+                  {bookings.map((b) => (
+                    <tr key={b.reference} className="hover:bg-surface-soft transition-colors">
+                      <td className="p-4 font-mono font-bold text-ink">
+                        #{b.reference}
+                        {b.pnr && <span className="block text-[10px] text-muted font-normal">PNR: {b.pnr}</span>}
+                      </td>
+                      <td className="p-4 font-sans text-body">
+                        {b.passengers[0].firstName} {b.passengers[0].lastName}
+                      </td>
+                      <td className="p-4 font-mono">
+                        {b.offerSnapshot.outboundSegments[0].originAirport} → {b.offerSnapshot.outboundSegments[0].destinationAirport}
+                      </td>
+                      <td className="p-4 font-mono font-bold text-ink">
+                        {formatMoney(b.priceSnapshot.totalMinor, b.currency)}
+                      </td>
+                      <td className="p-4">
+                        <Badge variant={b.status === "TICKETED" ? "semantic-up" : "pill"}>
+                          {b.status}
+                        </Badge>
+                      </td>
+                      <td className="p-4">
+                        <Badge variant={b.ticketStatus === "ISSUED" ? "semantic-up" : "pill"}>
+                          {b.ticketStatus}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-right space-x-2">
+                        {b.status !== "TICKETED" && (
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            disabled={retryingRef === b.reference}
+                            onClick={() => handleRetryTicketing(b.reference)}
+                          >
+                            {retryingRef === b.reference ? "Issuing..." : "Retry Ticketing"}
+                          </Button>
+                        )}
+                        <Link href={`/booking/${b.reference}`}>
+                          <Button variant="secondary-light" size="sm">
+                            View Slip
+                          </Button>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
 
       {/* Edit Config Modal */}
       {editingConfig && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm p-4">
-          <div className="bg-canvas rounded-xl border border-hairline shadow-2xl p-6 w-full max-w-lg space-y-4 animate-in fade-in zoom-in-95">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="admin-config-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm p-4 overflow-y-auto"
+        >
+          <div className="bg-canvas rounded-xl border border-hairline shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto touch-scroll space-y-4 animate-in fade-in zoom-in-95 my-auto">
             <div className="flex items-center justify-between border-b border-hairline pb-3">
               <div className="flex items-center space-x-2">
-                <KeyRound className="w-5 h-5 text-primary" />
-                <h3 className="font-bold text-base text-ink">
+                <KeyRound className="w-5 h-5 text-primary flex-shrink-0" />
+                <h3 id="admin-config-title" className="font-bold text-base text-ink">
                   Update Database Configuration
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setEditingConfig(null)}
-                className="w-7 h-7 rounded-pill bg-surface-soft hover:bg-hairline flex items-center justify-center text-muted"
+                aria-label="Close dialog"
+                className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-pill bg-surface-soft hover:bg-hairline flex items-center justify-center text-muted transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -500,7 +521,7 @@ export default function AdminDashboardPage() {
                   variant="primary"
                   size="sm"
                   disabled={updatingConfig}
-                  className="flex items-center space-x-1.5"
+                  className="flex items-center space-x-1.5 min-h-[38px]"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{updatingConfig ? "Saving to Database..." : "Save Configuration"}</span>
