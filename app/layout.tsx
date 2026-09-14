@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { CurrencyProvider } from "@/lib/context/CurrencyContext";
 
 export const metadata: Metadata = {
   title: "PN Tours and Travel | World-Class Air Ticketing Platform",
@@ -26,7 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-canvas text-body font-sans antialiased selection:bg-primary/20 selection:text-primary">
-        {children}
+        <CurrencyProvider>{children}</CurrencyProvider>
       </body>
     </html>
   );

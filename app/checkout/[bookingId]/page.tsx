@@ -137,7 +137,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
-      <Navbar currentCurrency={booking.currency} />
+      <Navbar />
 
       <main className="flex-1 py-12 px-4 sm:px-8 max-w-7xl mx-auto w-full">
         {/* Progress Bar */}

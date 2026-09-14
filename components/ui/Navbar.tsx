@@ -3,25 +3,23 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plane, Phone, Globe, ChevronDown, Luggage } from "lucide-react";
+import { Phone, Globe, ChevronDown, Luggage, Plane } from "lucide-react";
 import { Button } from "./Button";
 import { Currency } from "@/types";
+import { useCurrency } from "@/lib/context/CurrencyContext";
 
 interface NavbarProps {
-  currentCurrency?: Currency;
-  onCurrencyChange?: (c: Currency) => void;
   darkHero?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  currentCurrency = "USD",
-  onCurrencyChange,
-  darkHero = false,
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
   const pathname = usePathname();
+  const { currency, setCurrency } = useCurrency();
   const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const currencies: Currency[] = ["USD", "UGX", "EUR", "GBP", "KES"];
+  const brandLogoUrl = "https://www.image2url.com/r2/default/images/1789406854595-5200c580-b543-4d37-b30f-73c90d73d473.png";
 
   const navClasses = darkHero
     ? "bg-surface-dark text-on-dark border-b border-white/10"
@@ -47,14 +45,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1.5 font-medium">
               <Phone className="w-3.5 h-3.5 text-primary" />
-              <span>24/7 Reservations Hotline:</span>
+              <span>24/7 Ticketing Desk:</span>
               <a href="tel:+256785360444" className="text-primary hover:underline font-mono font-bold">
                 +256 785360444
               </a>
             </span>
             <span className="hidden md:inline text-muted-soft">|</span>
             <span className="hidden md:inline text-muted font-normal">
-              Direct Airline Content • Zero Hidden Checkout Surcharges
+              Direct Global Airline Content • Zero Hidden Checkout Fees
             </span>
           </div>
 
@@ -64,36 +62,36 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => setCurrencyOpen(!currencyOpen)}
-                className={`flex items-center space-x-1 font-mono text-xs px-2.5 py-1 rounded-pill border transition-colors ${
+                className={`flex items-center space-x-1.5 font-mono text-xs px-2.5 py-1 rounded-pill border transition-colors ${
                   darkHero
                     ? "border-white/20 text-on-dark hover:bg-white/10"
                     : "border-hairline text-ink bg-canvas hover:bg-surface-soft"
                 }`}
               >
                 <Globe className="w-3 h-3 text-primary" />
-                <span>{currentCurrency}</span>
+                <span>{currency}</span>
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </button>
 
               {currencyOpen && (
-                <div className="absolute right-0 mt-1 w-32 bg-canvas text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
+                <div className="absolute right-0 mt-1 w-36 bg-canvas text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
                   <div className="px-3 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-hairline">
-                    Currency
+                    Select Currency
                   </div>
                   {currencies.map((c) => (
                     <button
                       key={c}
                       type="button"
                       onClick={() => {
-                        if (onCurrencyChange) onCurrencyChange(c);
+                        setCurrency(c);
                         setCurrencyOpen(false);
                       }}
                       className={`w-full text-left px-3 py-1.5 text-xs hover:bg-surface-soft font-mono flex items-center justify-between ${
-                        currentCurrency === c ? "text-primary font-bold bg-surface-soft" : "text-ink"
+                        currency === c ? "text-primary font-bold bg-surface-soft" : "text-ink"
                       }`}
                     >
                       <span>{c}</span>
-                      {currentCurrency === c && <span className="text-primary text-[10px]">✓</span>}
+                      {currency === c && <span className="text-primary text-[10px]">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -103,13 +101,22 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Main navigation: strictly customer-facing */}
+      {/* Main navigation: Customer Travel Only */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
         {/* Brand logo & title */}
         <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-9 h-9 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20 group-hover:scale-105 transition-transform">
-            <Plane className="w-5 h-5 text-primary" />
-          </div>
+          {!logoError ? (
+            <img
+              src={brandLogoUrl}
+              alt="PN Tours and Travel Logo"
+              onError={() => setLogoError(true)}
+              className="h-10 w-auto object-contain rounded-sm"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20 group-hover:scale-105 transition-transform">
+              <Plane className="w-5 h-5 text-primary" />
+            </div>
+          )}
           <div className="flex flex-col">
             <span className={`text-base font-bold tracking-tight font-sans ${darkHero ? "text-on-dark" : "text-ink"}`}>
               PN Tours & Travel

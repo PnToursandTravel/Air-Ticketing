@@ -1,8 +1,13 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
-import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock } from "lucide-react";
+import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award } from "lucide-react";
 
 export const Footer: React.FC = () => {
+  const [logoError, setLogoError] = useState(false);
+  const brandLogoUrl = "https://www.image2url.com/r2/default/images/1789406854595-5200c580-b543-4d37-b30f-73c90d73d473.png";
+
   return (
     <footer className="bg-canvas text-body border-t border-hairline pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
@@ -10,9 +15,18 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20">
-                <Plane className="w-4 h-4 text-primary" />
-              </div>
+              {!logoError ? (
+                <img
+                  src={brandLogoUrl}
+                  alt="PN Tours and Travel Logo"
+                  onError={() => setLogoError(true)}
+                  className="h-10 w-auto object-contain rounded-sm"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20">
+                  <Plane className="w-4 h-4 text-primary" />
+                </div>
+              )}
               <span className="text-lg font-bold text-ink tracking-tight font-sans">
                 PN Tours & Travel
               </span>
@@ -31,7 +45,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3.5 h-3.5 text-primary" />
-                <span>Operations: Kampala, Uganda / Global Content</span>
+                <span>Operations: Kampala, Uganda / Global Network</span>
               </div>
             </div>
           </div>
@@ -63,7 +77,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Partner & Staff Portals - Separate Login Access */}
+          {/* Partner & Staff Portals */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Partner & Staff</h4>
             <ul className="space-y-2 text-sm">
@@ -98,7 +112,7 @@ export const Footer: React.FC = () => {
 
           {/* Trust & Security */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Trust & Security</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Trust & Accreditation</h4>
             <div className="space-y-2 text-xs text-muted leading-relaxed">
               <div className="flex items-center space-x-1.5 text-ink font-semibold">
                 <ShieldCheck className="w-4 h-4 text-semantic-up" />
@@ -107,8 +121,9 @@ export const Footer: React.FC = () => {
               <p>
                 All bookings and payment transactions are protected by TLS 1.3 encryption and institutional session security.
               </p>
-              <div className="pt-2 text-[11px] font-mono text-muted">
-                IATA Accreditation: 96-2 1849 2
+              <div className="pt-2 flex items-center space-x-1.5 text-ink font-semibold">
+                <Award className="w-4 h-4 text-primary" />
+                <span className="font-mono text-[11px]">IATA Accreditation: 96-2 1849 2</span>
               </div>
             </div>
           </div>

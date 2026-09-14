@@ -58,7 +58,7 @@ export default function BookingConfirmationPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
-      <Navbar currentCurrency={booking.currency} />
+      <Navbar />
 
       <main className="flex-1 py-12 px-4 sm:px-8 max-w-4xl mx-auto w-full space-y-8">
         {/* Top Success Banner */}
@@ -102,16 +102,23 @@ export default function BookingConfirmationPage() {
         <div className="bg-canvas rounded-xl border border-hairline shadow-lg overflow-hidden">
           {/* Slip Header */}
           <div className="bg-surface-dark text-on-dark p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs text-on-dark-soft uppercase font-mono tracking-wider block">
-                PN Tours & Travel • E-Ticket Receipt
-              </span>
-              <span className="text-2xl font-bold font-mono text-on-dark mt-1 block">
-                PNR: {booking.pnr || "PENDING"}
-              </span>
-              <span className="text-xs text-on-dark-soft font-mono">
-                Booking Reference #{booking.reference}
-              </span>
+            <div className="flex items-center space-x-4">
+              <img
+                src="https://www.image2url.com/r2/default/images/1789406854595-5200c580-b543-4d37-b30f-73c90d73d473.png"
+                alt="PN Tours and Travel"
+                className="h-12 w-auto object-contain bg-white/10 p-1 rounded-sm"
+              />
+              <div>
+                <span className="text-xs text-on-dark-soft uppercase font-mono tracking-wider block">
+                  PN Tours & Travel • E-Ticket Receipt
+                </span>
+                <span className="text-2xl font-bold font-mono text-on-dark mt-0.5 block">
+                  PNR: {booking.pnr || "PENDING"}
+                </span>
+                <span className="text-xs text-on-dark-soft font-mono">
+                  Booking Reference #{booking.reference}
+                </span>
+              </div>
             </div>
 
             <div className="text-left sm:text-right font-mono text-xs space-y-1">
