@@ -1,0 +1,129 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    // "CUSTOMER", "AGENT_OWNER", "AGENT_STAFF", "ADMIN", "SUPER_ADMIN"
+  agencyId     String?
+  agency       Agency?   @relation(fields: [agencyId], references: [id])
+  isActive     Boolean   @default(true)
+  sessions     Session[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+}
+
+model Agency {
+  id                 String         @id @default(uuid())
+  name               String
+  iataNumber         String?
+  licenseNumber      String?
+  contactEmail       String
+  contactPhone       String
+  status             String         @default("ACTIVE") // "PENDING", "ACTIVE", "SUSPENDED"
+  walletBalanceMinor Int            @default(0)
+  currency           String         @default("USD")
+  users              User[]
+  ledgerEntries      WalletLedger[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model ApiSecurityConfig {
+  id          String   @id @default(uuid())
+  category    String   // "SUPPLIER", "PAYMENT", "IATA", "SECURITY"
+  configKey   String   @unique
+  configValue String
+  isSecret    Boolean  @default(false)
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id                String         @id @default(uuid())
+  reference         String         @unique
+  pnr               String?
+  status            String         // "DRAFT", "PENDING_PAYMENT", "TICKETED", etc.
+  paymentStatus     String         // "PENDING", "SUCCEEDED", "FAILED"
+  ticketStatus      String         // "NOT_REQUESTED", "PENDING", "ISSUED", "FAILED"
+  userId            String?
+  agencyId          String?
+  contactEmail      String
+  contactPhone      String
+  currency          String         @default("USD")
+  priceSnapshotJson String         // JSON encoded price breakdown
+  offerSnapshotJson String         // JSON encoded flight offer details
+  passengersJson    String         // JSON encoded passenger manifests
+  tickets           Ticket[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Ticket {
+  id            String   @id @default(uuid())
+  bookingId     String
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  ticketNumber  String   @unique
+  passengerName String
+  airlineCode   String
+  issuedAt      DateTime @default(now())
+}
+
+model WalletLedger {
+  id                 String   @id @default(uuid())
+  agencyId           String
+  agency             Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  type               String   // "DEPOSIT", "BOOKING_DEBIT", "REFUND_CREDIT", "MANUAL_ADJUSTMENT"
+  amountMinor        Int
+  balanceBeforeMinor Int
+  balanceAfterMinor  Int
+  currency           String   @default("USD")
+  bookingReference   String?
+  description        String
+  actorId            String
+  createdAt          DateTime @default(now())
+}
+
+model PricingRule {
+  id                   String   @id @default(uuid())
+  name                 String
+  priority             Int      @default(100)
+  type                 String   // "FIXED", "PERCENTAGE"
+  amountMinorOrPercent Int
+  appliesTo            String   // "GLOBAL", "AIRLINE", "ROUTE", "CABIN", "AGENT"
+  targetCode           String?
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  actorEmail String
+  action     String   // "LOGIN", "API_KEY_UPDATE", "TICKET_RETRY", "WALLET_ADJUST"
+  target     String
+  details    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}

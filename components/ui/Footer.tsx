@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Plane, Phone, Mail, MapPin, ShieldCheck } from "lucide-react";
+import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
@@ -18,12 +18,12 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-sm text-muted leading-relaxed max-w-sm">
-              Worldwide air ticketing, corporate travel management, and IATA-accredited agency booking solutions. Built with institutional reliability, immediate e-ticketing, and transparent fare conditions.
+              Worldwide air ticketing, corporate travel bookings, and accredited flight reservation solutions. Built with institutional reliability, immediate e-ticketing, and transparent fare conditions.
             </p>
             <div className="pt-2 space-y-2 text-xs text-body font-mono">
               <div className="flex items-center space-x-2">
                 <Phone className="w-3.5 h-3.5 text-primary" />
-                <span>Hotline: +256 785360444 (24/7 Desk)</span>
+                <span>24/7 Ticketing Desk: +256 785360444</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-3.5 h-3.5 text-primary" />
@@ -31,23 +31,18 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3.5 h-3.5 text-primary" />
-                <span>Headquarters: Kampala, Uganda / Worldwide Operations</span>
+                <span>Operations: Kampala, Uganda / Global Content</span>
               </div>
             </div>
           </div>
 
           {/* Flights Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Flight Services</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Traveler Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/" className="hover:text-primary transition-colors">
                   International Flight Search
-                </Link>
-              </li>
-              <li>
-                <Link href="/" className="hover:text-primary transition-colors">
-                  Domestic & Regional Flights
                 </Link>
               </li>
               <li>
@@ -57,62 +52,63 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link href="/account/trips" className="hover:text-primary transition-colors">
-                  Online Flight Check-in
+                  Check-in Assistance
                 </Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-primary transition-colors">
-                  Flight Schedule Tracker
-                </Link>
+                <a href="tel:+256785360444" className="hover:text-primary transition-colors">
+                  24/7 Reservations Hotline
+                </a>
               </li>
             </ul>
           </div>
 
-          {/* Agency & Portals */}
+          {/* Partner & Staff Portals - Separate Login Access */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">B2B & Partners</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Partner & Staff</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/agent" className="hover:text-primary transition-colors">
-                  Agent B2B Portal
+                <Link
+                  href="/agent/login"
+                  className="hover:text-primary transition-colors flex items-center space-x-1.5"
+                >
+                  <Briefcase className="w-3.5 h-3.5 text-primary" />
+                  <span>Agent B2B Portal Login</span>
                 </Link>
               </li>
               <li>
-                <Link href="/agent" className="hover:text-primary transition-colors">
-                  Prepaid Wallet & Ledger
+                <Link
+                  href="/agent/login"
+                  className="hover:text-primary transition-colors text-xs text-muted"
+                >
+                  New Agency Application
                 </Link>
               </li>
               <li>
-                <Link href="/agent" className="hover:text-primary transition-colors">
-                  Agency Registration
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:text-primary transition-colors">
-                  Admin Operations Console
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/pricing" className="hover:text-primary transition-colors">
-                  Global Fare Markup Engine
+                <Link
+                  href="/admin/login"
+                  className="hover:text-primary transition-colors flex items-center space-x-1.5"
+                >
+                  <Lock className="w-3.5 h-3.5 text-primary" />
+                  <span>Staff Operations Login</span>
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Security & Compliance */}
+          {/* Trust & Security */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Trust & Security</h4>
             <div className="space-y-2 text-xs text-muted leading-relaxed">
               <div className="flex items-center space-x-1.5 text-ink font-semibold">
                 <ShieldCheck className="w-4 h-4 text-semantic-up" />
-                <span>Encrypted Transactions</span>
+                <span>Encrypted Reservations</span>
               </div>
               <p>
-                All bookings, customer passport credentials, and payments are guarded by TLS 1.3 encryption and institutional RBAC.
+                All bookings and payment transactions are protected by TLS 1.3 encryption and institutional session security.
               </p>
               <div className="pt-2 text-[11px] font-mono text-muted">
-                IATA Industry Compliant Architecture
+                IATA Accreditation: 96-2 1849 2
               </div>
             </div>
           </div>
@@ -124,8 +120,11 @@ export const Footer: React.FC = () => {
           <div className="flex items-center space-x-6">
             <span className="hover:text-ink transition-colors cursor-pointer">Privacy Policy</span>
             <span className="hover:text-ink transition-colors cursor-pointer">Terms of Carriage</span>
-            <span className="hover:text-ink transition-colors cursor-pointer">Refund & Cancellation Rules</span>
-            <span className="hover:text-ink transition-colors cursor-pointer">Security Disclosures</span>
+            <span className="hover:text-ink transition-colors cursor-pointer">Refund Policies</span>
+            <Link href="/admin/login" className="hover:text-ink transition-colors flex items-center space-x-1 text-muted">
+              <Lock className="w-3 h-3" />
+              <span>Internal</span>
+            </Link>
           </div>
         </div>
       </div>

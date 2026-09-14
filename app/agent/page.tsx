@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Wallet,
   ArrowUpRight,
@@ -25,7 +26,10 @@ import { formatFlightDate, formatMoney } from "@/lib/utils";
 import Link from "next/link";
 
 export default function AgentDashboardPage() {
+  const router = useRouter();
   const walletId = "wallet_agency_01";
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [wallet, setWallet] = useState(() => WalletService.getWalletBalance(walletId));
   const [ledger, setLedger] = useState(() => WalletService.getLedger(walletId));
   const [topupOpen, setTopupOpen] = useState(false);
@@ -33,6 +37,30 @@ export default function AgentDashboardPage() {
   const [topupSuccess, setTopupSuccess] = useState("");
 
   const agencyBookings = BookingService.getAll();
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch("/api/v1/auth/me");
+        const data = await res.json();
+        if (!res.ok || !data.success || !data.user || !["AGENT_OWNER", "AGENT_STAFF"].includes(data.user.role)) {
+          router.push("/agent/login");
+          return;
+        }
+        setCurrentUser(data.user);
+      } catch {
+        router.push("/agent/login");
+      } finally {
+        setCheckingAuth(false);
+      }
+    }
+    checkAuth();
+  }, [router]);
+
+  const handleLogout = async () => {
+    await fetch("/api/v1/auth/logout", { method: "POST" });
+    router.push("/agent/login");
+  };
 
   const handleTopupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +71,7 @@ export default function AgentDashboardPage() {
     WalletService.recordDeposit(
       walletId,
       amountMinor,
-      "usr_agent_01",
+      currentUser?.id || "usr_agent_01",
       `Prepaid wire deposit approved by Finance ($${amountVal})`
     );
 
@@ -53,6 +81,17 @@ export default function AgentDashboardPage() {
     setTopupOpen(false);
     setTimeout(() => setTopupSuccess(""), 4000);
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="text-center space-y-2 text-xs text-muted">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-pill animate-spin mx-auto" />
+          <span>Verifying agency session...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
@@ -67,10 +106,10 @@ export default function AgentDashboardPage() {
               <Badge variant="semantic-up">Active Agency</Badge>
             </div>
             <h1 className="text-3xl font-normal font-sans tracking-tight text-ink">
-              Premier Travel Bureau Uganda
+              {currentUser?.agencyName || "Premier Travel Bureau Uganda"}
             </h1>
             <p className="text-xs text-muted font-mono">
-              Agent ID: AG-84920 • IATA Accreditation: 96-2 1849 2
+              Signed in as: <span className="text-ink font-semibold">{currentUser?.name}</span> ({currentUser?.email}) • IATA: 96-2 1849 2
             </p>
           </div>
 
@@ -81,6 +120,14 @@ export default function AgentDashboardPage() {
                 <span>Book Flight for Client</span>
               </Button>
             </Link>
+            <Button
+              variant="secondary-light"
+              size="md"
+              onClick={handleLogout}
+              className="text-xs"
+            >
+              Sign Out
+            </Button>
           </div>
         </div>
 

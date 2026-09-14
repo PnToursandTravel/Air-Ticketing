@@ -78,3 +78,27 @@ All engineering milestones, architectural changes, testing results, and next act
   - **TypeScript Strict Compilation**: `npm run typecheck` passed with 0 errors.
   - **Production Build**: `npm run build` generated 10 optimized pages and route handlers with 0 errors.
   - **Browser E2E QA**: End-to-end verification of customer search, checkout, PNR/e-ticket issuance, agent portal, and admin console passed cleanly.
+
+---
+
+## Milestone 4: Database Authentication, Credential Persistence & Navigation Redesign
+- **Date**: 2026-09-14
+- **Status**: Completed
+- **Completed Work**:
+  - Integrated Prisma ORM with SQLite database engine (`dev.db`).
+  - Defined complete relational schema: `User`, `Session`, `Agency`, `ApiSecurityConfig`, `Booking`, `Ticket`, `WalletLedger`, `PricingRule`, and `AuditLog`.
+  - Implemented cryptographic password hashing (PBKDF2 SHA-512) and session token management in `lib/auth/password.ts` and `lib/auth/auth-service.ts`.
+  - Implemented database-stored API and security configuration service in `lib/settings/db-settings.ts` with secret masking (e.g. `sk_t••••••••8491`) and immutable audit logging.
+  - Built dedicated login interfaces:
+    - Agency B2B Login at `/agent/login` with agency application/registration tab.
+    - Staff Operations Login at `/admin/login` with high-security theme and RBAC enforcement.
+  - Implemented route protection: `/agent` and `/admin` redirect unauthenticated visitors to their respective login portals; added Sign Out buttons to both dashboards.
+  - Redesigned top navigation (`Navbar.tsx`): Main menu now displays *strictly customer travel options* (Flight Search, My Trips, 24/7 Hotline, Currency Switcher), completely removing Admin/Agent links and portal switchers from public view.
+  - Positioned discreet partner and staff login links in the footer under **Partner & Staff Portals**.
+  - Seeded database with pre-hashed credentials:
+    - Super Admin: `admin@pntoursandtravel.com` / `Admin@PN2026!`
+    - Travel Agency: `agent@pntoursandtravel.com` / `Agent@PN2026!`
+    - Customer: `customer@example.com` / `Customer@PN2026!`
+  - Verified test suite: 17/17 tests passing in Vitest.
+  - Verified production build: 16 routes compiled cleanly with 0 errors.
+  - Verified browser subagent flow: confirmed customer-only navbar, footer partner links, agency login/logout, and admin credentials management with edit modal.

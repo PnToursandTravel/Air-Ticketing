@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plane, Phone, Globe, Shield, User, Briefcase, ChevronDown } from "lucide-react";
+import { Plane, Phone, Globe, ChevronDown, Luggage } from "lucide-react";
 import { Button } from "./Button";
 import { Currency } from "@/types";
 
@@ -20,7 +20,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const pathname = usePathname();
   const [currencyOpen, setCurrencyOpen] = useState(false);
-  const [roleOpen, setRoleOpen] = useState(false);
 
   const currencies: Currency[] = ["USD", "UGX", "EUR", "GBP", "KES"];
 
@@ -36,29 +35,40 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-200 ${navClasses}`}>
-      {/* Top micro-bar for 24/7 hotline and multi-currency notice */}
-      <div className={`text-xs py-1.5 px-4 sm:px-8 border-b ${darkHero ? "border-white/10 bg-surface-dark-elevated text-on-dark-soft" : "border-hairline bg-surface-soft text-body"}`}>
+      {/* Top micro-bar: 24/7 hotline and multi-currency */}
+      <div
+        className={`text-xs py-1.5 px-4 sm:px-8 border-b ${
+          darkHero
+            ? "border-white/10 bg-surface-dark-elevated text-on-dark-soft"
+            : "border-hairline bg-surface-soft text-body"
+        }`}
+      >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1.5 font-medium">
               <Phone className="w-3.5 h-3.5 text-primary" />
-              <span>24/7 Ticketing Desk:</span>
-              <a href="tel:+256785360444" className="text-primary hover:underline font-mono">
+              <span>24/7 Reservations Hotline:</span>
+              <a href="tel:+256785360444" className="text-primary hover:underline font-mono font-bold">
                 +256 785360444
               </a>
             </span>
             <span className="hidden md:inline text-muted-soft">|</span>
             <span className="hidden md:inline text-muted font-normal">
-              Worldwide IATA Flight Content & Immediate PNR Issuance
+              Direct Airline Content • Zero Hidden Checkout Surcharges
             </span>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
             {/* Currency selector */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setCurrencyOpen(!currencyOpen)}
-                className={`flex items-center space-x-1 font-mono text-xs px-2 py-0.5 rounded-pill border ${darkHero ? "border-white/20 text-on-dark" : "border-hairline text-ink bg-canvas"}`}
+                className={`flex items-center space-x-1 font-mono text-xs px-2.5 py-1 rounded-pill border transition-colors ${
+                  darkHero
+                    ? "border-white/20 text-on-dark hover:bg-white/10"
+                    : "border-hairline text-ink bg-canvas hover:bg-surface-soft"
+                }`}
               >
                 <Globe className="w-3 h-3 text-primary" />
                 <span>{currentCurrency}</span>
@@ -66,16 +76,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               {currencyOpen && (
-                <div className="absolute right-0 mt-1 w-28 bg-canvas text-ink rounded-md border border-hairline shadow-lg py-1 z-50">
+                <div className="absolute right-0 mt-1 w-32 bg-canvas text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
+                  <div className="px-3 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-hairline">
+                    Currency
+                  </div>
                   {currencies.map((c) => (
                     <button
                       key={c}
+                      type="button"
                       onClick={() => {
                         if (onCurrencyChange) onCurrencyChange(c);
                         setCurrencyOpen(false);
                       }}
                       className={`w-full text-left px-3 py-1.5 text-xs hover:bg-surface-soft font-mono flex items-center justify-between ${
-                        currentCurrency === c ? "text-primary font-bold" : "text-ink"
+                        currentCurrency === c ? "text-primary font-bold bg-surface-soft" : "text-ink"
                       }`}
                     >
                       <span>{c}</span>
@@ -85,53 +99,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Role Demo switcher */}
-            <div className="relative">
-              <button
-                onClick={() => setRoleOpen(!roleOpen)}
-                className="text-[11px] font-semibold text-primary hover:underline flex items-center space-x-1"
-              >
-                <span>Switch Portal</span>
-                <ChevronDown className="w-2.5 h-2.5" />
-              </button>
-              {roleOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-canvas text-ink rounded-md border border-hairline shadow-xl py-1 z-50">
-                  <div className="px-3 py-1 text-[10px] uppercase font-bold text-muted border-b border-hairline">
-                    Demo Portals
-                  </div>
-                  <Link
-                    href="/"
-                    onClick={() => setRoleOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-2 text-xs hover:bg-surface-soft text-ink"
-                  >
-                    <User className="w-3.5 h-3.5 text-primary" />
-                    <span>Customer Portal</span>
-                  </Link>
-                  <Link
-                    href="/agent"
-                    onClick={() => setRoleOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-2 text-xs hover:bg-surface-soft text-ink"
-                  >
-                    <Briefcase className="w-3.5 h-3.5 text-primary" />
-                    <span>Agent B2B Portal</span>
-                  </Link>
-                  <Link
-                    href="/admin"
-                    onClick={() => setRoleOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-2 text-xs hover:bg-surface-soft text-ink"
-                  >
-                    <Shield className="w-3.5 h-3.5 text-primary" />
-                    <span>Admin Operations</span>
-                  </Link>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Main navigation */}
+      {/* Main navigation: strictly customer-facing */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
         {/* Brand logo & title */}
         <Link href="/" className="flex items-center space-x-3 group">
@@ -143,12 +115,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               PN Tours & Travel
             </span>
             <span className="text-[10px] tracking-wider uppercase text-muted font-semibold">
-              Air Ticketing Platform
+              Air Ticketing
             </span>
           </div>
         </Link>
 
-        {/* Center menu links */}
+        {/* Center menu links - Customer Travel Only */}
         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
           <Link
             href="/"
@@ -172,44 +144,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : "text-body"
             }`}
           >
-            My Trips
+            My Trips & E-Tickets
           </Link>
-          <Link
-            href="/agent"
-            className={`transition-colors hover:text-primary ${
-              linkActive("/agent")
-                ? "text-primary font-semibold"
-                : darkHero
-                ? "text-on-dark/80"
-                : "text-body"
+          <a
+            href="tel:+256785360444"
+            className={`transition-colors hover:text-primary flex items-center space-x-1.5 ${
+              darkHero ? "text-on-dark/80" : "text-body"
             }`}
           >
-            Agent Portal
-          </Link>
-          <Link
-            href="/admin"
-            className={`transition-colors hover:text-primary ${
-              linkActive("/admin")
-                ? "text-primary font-semibold"
-                : darkHero
-                ? "text-on-dark/80"
-                : "text-body"
-            }`}
-          >
-            Admin Operations
-          </Link>
+            <Phone className="w-3.5 h-3.5 text-primary" />
+            <span>24/7 Ticketing Desk</span>
+          </a>
         </nav>
 
-        {/* Right CTA */}
+        {/* Right Action: Customer Manage Booking */}
         <div className="flex items-center space-x-3">
-          <Link href="/agent">
-            <Button variant={darkHero ? "secondary-dark" : "secondary-light"} size="sm">
-              Agent Log In
-            </Button>
-          </Link>
           <Link href="/account/trips">
-            <Button variant="primary" size="sm">
-              Manage Booking
+            <Button variant="primary" size="sm" className="flex items-center space-x-1.5">
+              <Luggage className="w-3.5 h-3.5" />
+              <span>Manage Booking</span>
             </Button>
           </Link>
         </div>
