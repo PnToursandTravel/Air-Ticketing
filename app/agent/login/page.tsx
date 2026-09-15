@@ -14,8 +14,8 @@ export default function AgentLoginPage() {
   const [tab, setTab] = useState<"LOGIN" | "REGISTER">("LOGIN");
 
   // Login form state
-  const [email, setEmail] = useState("agent@pntoursandtravel.com");
-  const [password, setPassword] = useState("Agent@PN2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -131,15 +131,6 @@ export default function AgentLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
               />
-
-              {/* Demo Account Callout */}
-              <div className="p-3 rounded-md bg-primary/5 border border-primary/10 text-xs space-y-1">
-                <span className="font-bold text-ink block">Demo Agency Credentials:</span>
-                <div className="font-mono text-[11px] text-muted space-y-0.5">
-                  <div>Email: <span className="text-ink font-semibold">agent@pntoursandtravel.com</span></div>
-                  <div>Password: <span className="text-ink font-semibold">Agent@PN2026!</span></div>
-                </div>
-              </div>
 
               <Button
                 type="submit"

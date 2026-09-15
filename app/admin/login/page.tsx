@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/Badge";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@pntoursandtravel.com");
-  const [password, setPassword] = useState("Admin@PN2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -102,15 +102,6 @@ export default function AdminLoginPage() {
                 placeholder="••••••••••••"
                 className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-white/15 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
-            </div>
-
-            {/* Demo Account Helper */}
-            <div className="p-3 rounded-md bg-white/5 border border-white/10 text-xs space-y-1">
-              <span className="font-bold text-on-dark block">Super Admin Credentials:</span>
-              <div className="font-mono text-[11px] text-on-dark-soft space-y-0.5">
-                <div>Email: <span className="text-on-dark font-semibold">admin@pntoursandtravel.com</span></div>
-                <div>Password: <span className="text-on-dark font-semibold">Admin@PN2026!</span></div>
-              </div>
             </div>
 
             <Button
