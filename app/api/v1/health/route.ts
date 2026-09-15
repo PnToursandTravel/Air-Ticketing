@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { flightProvider } from "@/lib/flights/mock-provider";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const supplierStatus = await flightProvider.healthCheck();
 
