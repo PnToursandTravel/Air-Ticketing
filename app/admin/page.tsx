@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
               <Badge variant="pill">Operations & Control</Badge>
               <Badge variant="semantic-up">System Healthy</Badge>
               <Badge variant="pill" className="bg-primary/10 text-primary font-mono text-[10px]">
-                Database: SQLite Connected
+                Database: Supabase PostgreSQL Active
               </Badge>
             </div>
             <h1 className="text-3xl font-normal font-sans tracking-tight text-ink">

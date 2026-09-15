@@ -31,7 +31,7 @@ export class AuthService {
       include: { agency: true },
     });
 
-    if (!user || !user.isActive) {
+    if (!user || !user.isActive || !user.passwordHash) {
       throw new Error("Invalid email or password");
     }
 

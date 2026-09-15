@@ -8,18 +8,50 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ==========================================
+// 1. IDENTITY & RBAC
+// ==========================================
+
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String
-  name         String
-  role         String    // "CUSTOMER", "AGENT_OWNER", "AGENT_STAFF", "ADMIN", "SUPER_ADMIN"
-  agencyId     String?
-  agency       Agency?   @relation(fields: [agencyId], references: [id])
-  isActive     Boolean   @default(true)
-  sessions     Session[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String         @id @default(uuid())
+  email           String         @unique
+  passwordHash    String?        // Optional: Supabase Auth manages passwords, local hash preserved for legacy
+  name            String
+  role            String         @default("CUSTOMER") // "CUSTOMER", "AGENT_OWNER", "AGENT_STAFF", "ADMIN", "SUPER_ADMIN"
+  status          String         @default("ACTIVE")   // "PENDING", "ACTIVE", "SUSPENDED", "DEACTIVATED"
+  isInternalStaff Boolean        @default(false)
+  agencyId        String?
+  agency          Agency?        @relation(fields: [agencyId], references: [id])
+  isActive        Boolean        @default(true)
+  
+  profile         UserProfile?
+  sessions        Session[]
+  userRoles       UserRole[]
+  agencyMembers   AgencyMember[]
+  
+  auditEvents     AuditLog[]     @relation("AuditActor")
+  ledgersInitiated WalletLedgerEntry[] @relation("LedgerInitiator")
+  ledgersApproved  WalletLedgerEntry[] @relation("LedgerApprover")
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([email])
+  @@index([agencyId])
+  @@index([role])
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String?
+  lastName  String?
+  phone     String?
+  jobTitle  String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Session {
@@ -31,65 +63,297 @@ model Session {
   ipAddress    String?
   userAgent    String?
   createdAt    DateTime @default(now())
+
+  @@index([sessionToken])
+  @@index([userId])
 }
 
+model Role {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  description     String?
+  isInternal      Boolean          @default(false)
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  category        String           // "AGENCY", "WALLET", "BOOKING", "STAFF", "AUDIT", "SETTINGS"
+  description     String?
+  rolePermissions RolePermission[]
+}
+
+model UserRole {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId     String
+  role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedBy String?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+// ==========================================
+// 2. AGENCY MANAGEMENT & ONBOARDING
+// ==========================================
+
 model Agency {
-  id                 String         @id @default(uuid())
+  id                 String               @id @default(uuid())
+  reference          String?              @unique // Formatted as PN-AGY-XXXXXXXX
   name               String
+  legalName          String?
+  companyRegNumber   String?
   iataNumber         String?
+  tidsNumber         String?
   licenseNumber      String?
   contactEmail       String
   contactPhone       String
-  status             String         @default("ACTIVE") // "PENDING", "ACTIVE", "SUSPENDED"
-  walletBalanceMinor Int            @default(0)
-  currency           String         @default("USD")
+  address            String?
+  country            String               @default("Uganda")
+  status             String               @default("ACTIVE") // "PENDING", "ACTIVE", "SUSPENDED", "REJECTED"
+  walletBalanceMinor Int                  @default(0)
+  heldBalanceMinor   Int                  @default(0)
+  currency           String               @default("USD")
+  
   users              User[]
+  members            AgencyMember[]
+  branches           AgencyBranch[]
+  wallet             Wallet?
   ledgerEntries      WalletLedger[]
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  ledgerEntriesV2    WalletLedgerEntry[]
+  fundingRequests    WalletFundingRequest[]
+  invoices           Invoice[]
+  bookings           Booking[]
+  documents          ComplianceDocument[]
+  
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([reference])
+  @@index([status])
+  @@index([iataNumber])
 }
 
-model ApiSecurityConfig {
-  id          String   @id @default(uuid())
-  category    String   // "SUPPLIER", "PAYMENT", "IATA", "SECURITY"
-  configKey   String   @unique
-  configValue String
-  isSecret    Boolean  @default(false)
-  description String?
-  updatedBy   String?
-  updatedAt   DateTime @updatedAt
+model AgencyBranch {
+  id        String   @id @default(uuid())
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  name      String
+  code      String?
+  address   String?
+  phone     String?
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
-model Booking {
-  id                String         @id @default(uuid())
-  reference         String         @unique
-  pnr               String?
-  status            String         // "DRAFT", "PENDING_PAYMENT", "TICKETED", etc.
-  paymentStatus     String         // "PENDING", "SUCCEEDED", "FAILED"
-  ticketStatus      String         // "NOT_REQUESTED", "PENDING", "ISSUED", "FAILED"
-  userId            String?
-  agencyId          String?
-  contactEmail      String
-  contactPhone      String
-  currency          String         @default("USD")
-  priceSnapshotJson String         // JSON encoded price breakdown
-  offerSnapshotJson String         // JSON encoded flight offer details
-  passengersJson    String         // JSON encoded passenger manifests
-  tickets           Ticket[]
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+model AgencyMember {
+  id        String   @id @default(uuid())
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("AGENCY_BOOKING_AGENT") // "AGENCY_OWNER", "AGENCY_MANAGER", "AGENCY_BOOKING_AGENT", "AGENCY_FINANCE", "AGENCY_VIEWER"
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agencyId, userId])
+  @@index([agencyId])
+  @@index([userId])
 }
 
-model Ticket {
-  id            String   @id @default(uuid())
-  bookingId     String
-  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  ticketNumber  String   @unique
-  passengerName String
-  airlineCode   String
-  issuedAt      DateTime @default(now())
+model AgencyApplication {
+  id                 String                     @id @default(uuid())
+  trackingId         String                     @unique // Formatted as PN-APP-XXXXXXXX
+  agencyLegalName    String
+  agencyTradeName    String
+  registrationNumber String
+  taxId              String?
+  iataNumber         String?
+  tidsNumber         String?
+  licenseNumber      String
+  officialEmail      String
+  businessPhone      String
+  address            String
+  country            String                     @default("Uganda")
+  website            String?
+  status             String                     @default("SUBMITTED") // "DRAFT", "SUBMITTED", "UNDER_REVIEW", "MORE_INFORMATION_REQUIRED", "APPROVED", "REJECTED", "SUSPENDED"
+  statusReason       String?
+  internalNotes      String?
+  verificationToken  String?
+  isEmailVerified    Boolean                    @default(false)
+  
+  contacts           AgencyApplicationContact[]
+  documents          ComplianceDocument[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@index([trackingId])
+  @@index([officialEmail])
+  @@index([status])
 }
 
+model AgencyApplicationContact {
+  id            String            @id @default(uuid())
+  applicationId String
+  application   AgencyApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fullName      String
+  position      String
+  email         String
+  phone         String
+  createdAt     DateTime          @default(now())
+
+  @@index([applicationId])
+}
+
+model ComplianceDocument {
+  id               String            @id @default(uuid())
+  bucket           String            // "agency-compliance-documents", "wallet-payment-proofs", etc.
+  objectPath       String
+  originalFileName String
+  mimeType         String
+  sizeBytes        Int
+  checksum         String?
+  applicationId    String?
+  application      AgencyApplication? @relation(fields: [applicationId], references: [id])
+  agencyId         String?
+  agency           Agency?           @relation(fields: [agencyId], references: [id])
+  uploadedByUserId String?
+  reviewStatus     String            @default("PENDING") // "PENDING", "VERIFIED", "REJECTED"
+  reviewedByUserId String?
+  reviewedAt       DateTime?
+  reviewNotes      String?
+  reviews          DocumentReview[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([applicationId])
+  @@index([agencyId])
+  @@index([reviewStatus])
+}
+
+model DocumentReview {
+  id             String             @id @default(uuid())
+  documentId     String
+  document       ComplianceDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  reviewerUserId String
+  decision       String             // "APPROVED", "REJECTED", "MORE_INFO_NEEDED"
+  notes          String?
+  createdAt      DateTime           @default(now())
+}
+
+// ==========================================
+// 3. PREPAID WALLET & LEDGER SYSTEM
+// ==========================================
+
+model Wallet {
+  id                   String              @id @default(uuid())
+  agencyId             String              @unique
+  agency               Agency              @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  currency             String              @default("USD")
+  availableBalanceMinor Int                 @default(0)
+  heldBalanceMinor     Int                 @default(0)
+  status               String              @default("ACTIVE") // "ACTIVE", "FROZEN", "SUSPENDED"
+  entries              WalletLedgerEntry[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@index([agencyId])
+}
+
+model WalletLedgerEntry {
+  id                 String   @id @default(uuid())
+  transactionReference String @unique // PN-WTX-XXXXXXXX
+  idempotencyKey     String?  @unique
+  walletId           String
+  wallet             Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  agencyId           String
+  agency             Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  type               String   // "OPENING_BALANCE", "TOP_UP_APPROVED", "CREDIT", "DEBIT", "BOOKING_HOLD", "BOOKING_CAPTURE", "BOOKING_RELEASE", "BOOKING_REFUND", "MANUAL_ADJUSTMENT"
+  status             String   @default("POSTED") // "POSTED", "VOIDED"
+  amountMinor        Int
+  balanceBeforeMinor Int
+  balanceAfterMinor  Int
+  currency           String   @default("USD")
+  relatedBookingId   String?
+  relatedFundingRequestId String?
+  relatedInvoiceId   String?
+  relatedAdjustmentId String?
+  initiatedByUserId  String?
+  initiator          User?    @relation("LedgerInitiator", fields: [initiatedByUserId], references: [id])
+  approvedByUserId   String?
+  approver           User?    @relation("LedgerApprover", fields: [approvedByUserId], references: [id])
+  reason             String?
+  metadataJson       String?
+  createdAt          DateTime @default(now())
+
+  @@index([agencyId])
+  @@index([walletId])
+  @@index([transactionReference])
+  @@index([idempotencyKey])
+}
+
+model WalletFundingRequest {
+  id                 String   @id @default(uuid())
+  reference          String   @unique // PN-FND-XXXXXXXX
+  agencyId           String
+  agency             Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  amountMinor        Int
+  currency           String   @default("USD")
+  paymentMethod      String   // "BANK_TRANSFER", "CARD", "MOBILE_MONEY"
+  paymentProofDocId  String?
+  status             String   @default("SUBMITTED") // "DRAFT", "SUBMITTED", "UNDER_REVIEW", "APPROVED", "REJECTED", "CANCELLED"
+  rejectionReason    String?
+  internalNotes      String?
+  requestedByUserId  String
+  reviewedByUserId   String?
+  reviewedAt         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([reference])
+  @@index([status])
+}
+
+model WalletAdjustment {
+  id                 String    @id @default(uuid())
+  reference          String    @unique // PN-ADJ-XXXXXXXX
+  agencyId           String
+  type               String    // "CREDIT", "DEBIT"
+  amountMinor        Int
+  currency           String    @default("USD")
+  reason             String
+  status             String    @default("PENDING_APPROVAL") // "PENDING_APPROVAL", "APPROVED", "REJECTED"
+  initiatedByUserId  String
+  approvedByUserId   String?
+  approvedAt         DateTime?
+  rejectionReason    String?
+  createdAt          DateTime  @default(now())
+
+  @@index([agencyId])
+  @@index([reference])
+  @@index([status])
+}
+
+// Backwards-compatible legacy WalletLedger model
 model WalletLedger {
   id                 String   @id @default(uuid())
   agencyId           String
@@ -103,6 +367,292 @@ model WalletLedger {
   description        String
   actorId            String
   createdAt          DateTime @default(now())
+
+  @@index([agencyId])
+}
+
+// ==========================================
+// 4. FLIGHT QUOTES, BOOKINGS & TICKETING
+// ==========================================
+
+model FlightQuote {
+  id                   String    @id @default(uuid())
+  quoteReference       String    @unique // PN-QTE-XXXXXXXX
+  agencyId             String?
+  userId               String?
+  origin               String
+  destination          String
+  departureDate        DateTime
+  returnDate           DateTime?
+  tripType             String    // "ONE_WAY", "ROUND_TRIP", "MULTI_CITY"
+  cabinClass           String    // "ECONOMY", "PREMIUM_ECONOMY", "BUSINESS", "FIRST"
+  passengersCount      Int
+  fareMinor            Int
+  taxesMinor           Int
+  serviceFeeMinor      Int
+  totalAmountMinor     Int
+  currency             String    @default("USD")
+  fareRulesJson        String?
+  itinerarySnapshotJson String
+  providerReference    String?
+  expiresAt            DateTime
+  createdAt            DateTime  @default(now())
+
+  @@index([quoteReference])
+  @@index([agencyId])
+  @@index([expiresAt])
+}
+
+model Booking {
+  id                String                 @id @default(uuid())
+  reference         String                 @unique // PN-BKG-XXXXXXXX
+  pnr               String?
+  providerBookingRef String?
+  quoteId           String?
+  status            String                 // "DRAFT", "QUOTED", "FUNDS_HELD", "CONFIRMED", "PENDING_TICKETING", "TICKETED", "CANCEL_REQUESTED", "CANCELLED", "VOID_REQUESTED", "VOIDED", "REFUNDED", "FAILED"
+  paymentStatus     String                 // "PENDING", "HELD", "CAPTURED", "REFUNDED", "FAILED"
+  ticketStatus      String                 // "NOT_REQUESTED", "PENDING", "ISSUED", "VOIDED", "FAILED"
+  userId            String?
+  agencyId          String?
+  agency            Agency?                @relation(fields: [agencyId], references: [id])
+  contactEmail      String
+  contactPhone      String
+  currency          String                 @default("USD")
+  priceSnapshotJson String                 // JSON encoded price breakdown
+  offerSnapshotJson String                 // JSON encoded flight offer details
+  passengersJson    String                 // JSON encoded passenger manifests
+  walletHoldId      String?
+  walletCaptureId   String?
+  
+  segments          FlightSegment[]
+  passengers        Passenger[]
+  tickets           Ticket[]
+  statusHistory     BookingStatusHistory[]
+  refundRequests    RefundRequest[]
+  
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  @@index([reference])
+  @@index([pnr])
+  @@index([agencyId])
+  @@index([status])
+}
+
+model BookingStatusHistory {
+  id          String   @id @default(uuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fromStatus  String
+  toStatus    String
+  actorUserId String?
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  @@index([bookingId])
+}
+
+model FlightSegment {
+  id               String   @id @default(uuid())
+  bookingId        String
+  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  airlineCode      String
+  flightNumber     String
+  departureAirport String
+  arrivalAirport   String
+  departureTime    DateTime
+  arrivalTime      DateTime
+  cabinClass       String
+
+  @@index([bookingId])
+}
+
+model Passenger {
+  id             String    @id @default(uuid())
+  bookingId      String
+  booking        Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type           String    // "ADULT", "CHILD", "INFANT"
+  title          String?
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime?
+  passportNumber String?
+  passportExpiry DateTime?
+  nationality    String?
+
+  @@index([bookingId])
+}
+
+model Ticket {
+  id            String    @id @default(uuid())
+  bookingId     String
+  booking       Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  ticketNumber  String    @unique
+  passengerName String
+  airlineCode   String
+  status        String    @default("ISSUED") // "ISSUED", "VOIDED"
+  issuedAt      DateTime  @default(now())
+  voidedAt      DateTime?
+
+  @@index([bookingId])
+  @@index([ticketNumber])
+}
+
+model RefundRequest {
+  id                String    @id @default(uuid())
+  reference         String    @unique // PN-REF-XXXXXXXX
+  bookingId         String
+  booking           Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  agencyId          String
+  reason            String
+  amountMinor       Int
+  currency          String    @default("USD")
+  status            String    @default("PENDING") // "PENDING", "APPROVED", "PROCESSED", "REJECTED"
+  processedByUserId String?
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@index([bookingId])
+  @@index([agencyId])
+}
+
+// ==========================================
+// 5. INVOICES, NOTES & SUPPORT
+// ==========================================
+
+model Invoice {
+  id                String   @id @default(uuid())
+  invoiceNumber     String   @unique // PN-INV-XXXXXXXX
+  agencyId          String
+  agency            Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  bookingId         String?
+  fundingRequestId  String?
+  totalAmountMinor  Int
+  currency          String   @default("USD")
+  status            String   @default("PAID") // "PENDING", "PAID", "CANCELLED"
+  issuedAt          DateTime @default(now())
+  pdfObjectPath     String?
+
+  @@index([agencyId])
+  @@index([invoiceNumber])
+}
+
+model SupportCase {
+  id              String   @id @default(uuid())
+  reference       String   @unique // PN-CAS-XXXXXXXX
+  agencyId        String?
+  bookingId       String?
+  subject         String
+  priority        String   @default("MEDIUM") // "LOW", "MEDIUM", "HIGH", "URGENT"
+  status          String   @default("OPEN")   // "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"
+  assignedToUserId String?
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([reference])
+}
+
+model InternalNote {
+  id           String   @id @default(uuid())
+  targetType   String   // "AGENCY", "APPLICATION", "BOOKING", "WALLET"
+  targetId     String
+  authorUserId String
+  content      String
+  createdAt    DateTime @default(now())
+
+  @@index([targetType, targetId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String?
+  agencyId  String?
+  title     String
+  message   String
+  type      String   // "APPLICATION", "FUNDING", "BOOKING", "TICKET", "SECURITY"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([agencyId])
+}
+
+// ==========================================
+// 6. SYSTEM, AUDIT, IDEMPOTENCY & CONFIG
+// ==========================================
+
+model AuditLog {
+  id                 String   @id @default(uuid())
+  actorUserId        String?
+  actor              User?    @relation("AuditActor", fields: [actorUserId], references: [id])
+  actorEmail         String?
+  actorRoleSnapshot  String?
+  agencyId           String?
+  action             String   @default("SYSTEM_ACTION") // e.g. "USER_LOGIN_SUCCESS", "AGENCY_APPROVED", "WALLET_CREDITED", "TICKET_ISSUED"
+  resourceType       String   @default("SYSTEM") // "USER", "AGENCY", "WALLET", "BOOKING", "DOCUMENT"
+  resourceId         String?
+  outcome            String   @default("SUCCESS") // "SUCCESS", "FAILURE", "BLOCKED"
+  reason             String?
+  requestId          String?
+  ipAddress          String?
+  userAgent          String?
+  beforeStateJson    String?
+  afterStateJson     String?
+  safeMetadataJson   String?
+  
+  // Backwards compatibility fields
+  actorId            String?
+  target             String?
+  details            String?
+
+  createdAt          DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([agencyId])
+  @@index([action])
+  @@index([resourceType])
+  @@index([createdAt])
+}
+
+model IdempotencyKey {
+  id                 String   @id @default(uuid())
+  key                String   @unique
+  actorUserId        String?
+  action             String
+  requestHash        String
+  responseStatusCode Int?
+  responseBodyJson   String?
+  expiresAt          DateTime
+  createdAt          DateTime @default(now())
+
+  @@index([key])
+  @@index([expiresAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  category    String   // "SUPPLIER", "PAYMENT", "SECURITY", "SYSTEM"
+  configKey   String   @unique
+  configValue String
+  isSecret    Boolean  @default(false)
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([configKey])
+}
+
+model ApiSecurityConfig {
+  id          String   @id @default(uuid())
+  category    String   // "SUPPLIER", "PAYMENT", "IATA", "SECURITY"
+  configKey   String   @unique
+  configValue String
+  isSecret    Boolean  @default(false)
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
 }
 
 model PricingRule {
@@ -116,15 +666,4 @@ model PricingRule {
   active               Boolean  @default(true)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
-}
-
-model AuditLog {
-  id         String   @id @default(uuid())
-  actorId    String
-  actorEmail String
-  action     String   // "LOGIN", "API_KEY_UPDATE", "TICKET_RETRY", "WALLET_ADJUST"
-  target     String
-  details    String?
-  ipAddress  String?
-  createdAt  DateTime @default(now())
 }

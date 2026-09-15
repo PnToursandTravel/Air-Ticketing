@@ -27,16 +27,33 @@ import Link from "next/link";
 
 export default function AgentDashboardPage() {
   const router = useRouter();
-  const walletId = "wallet_agency_01";
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [wallet, setWallet] = useState(() => WalletService.getWalletBalance(walletId));
-  const [ledger, setLedger] = useState(() => WalletService.getLedger(walletId));
+  const [wallet, setWallet] = useState<any>({
+    currency: "USD",
+    availableBalanceMinor: 0,
+    heldBalanceMinor: 0,
+    status: "ACTIVE",
+  });
+  const [ledger, setLedger] = useState<any[]>([]);
   const [topupOpen, setTopupOpen] = useState(false);
   const [topupAmount, setTopupAmount] = useState("1000");
   const [topupSuccess, setTopupSuccess] = useState("");
 
   const agencyBookings = BookingService.getAll();
+
+  const loadWallet = async () => {
+    try {
+      const res = await fetch("/api/v1/agency/wallet");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setWallet(data.data.wallet);
+        setLedger(data.data.transactions || []);
+      }
+    } catch (err) {
+      console.warn("Notice loading wallet:", err);
+    }
+  };
 
   useEffect(() => {
     async function checkAuth() {
@@ -48,6 +65,7 @@ export default function AgentDashboardPage() {
           return;
         }
         setCurrentUser(data.user);
+        await loadWallet();
       } catch {
         router.push("/agent/login");
       } finally {
@@ -62,24 +80,34 @@ export default function AgentDashboardPage() {
     router.push("/agent/login");
   };
 
-  const handleTopupSubmit = (e: React.FormEvent) => {
+  const handleTopupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amountVal = parseFloat(topupAmount);
     if (isNaN(amountVal) || amountVal <= 0) return;
 
     const amountMinor = Math.round(amountVal * 100);
-    WalletService.recordDeposit(
-      walletId,
-      amountMinor,
-      currentUser?.id || "usr_agent_01",
-      `Prepaid wire deposit approved by Finance ($${amountVal})`
-    );
 
-    setWallet(WalletService.getWalletBalance(walletId));
-    setLedger(WalletService.getLedger(walletId));
-    setTopupSuccess(`Top-up of $${amountVal.toFixed(2)} credited successfully to agency wallet.`);
-    setTopupOpen(false);
-    setTimeout(() => setTopupSuccess(""), 4000);
+    try {
+      const res = await fetch("/api/v1/agency/wallet/funding-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountMinor,
+          paymentMethod: "BANK_TRANSFER",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTopupSuccess(`Top-up request for $${amountVal.toFixed(2)} submitted successfully (Ref: ${data.data.reference}). Pending Finance review.`);
+        setTopupOpen(false);
+        await loadWallet();
+        setTimeout(() => setTopupSuccess(""), 6000);
+      } else {
+        alert(data.error || "Failed to submit top-up request.");
+      }
+    } catch {
+      alert("Network error submitting top-up request.");
+    }
   };
 
   if (checkingAuth) {

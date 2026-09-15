@@ -1,38 +1,45 @@
-# PN Tours & Travel — Air Ticketing Platform
+# PN Tours & Travel — Enterprise B2B Air Ticketing Platform
 
-> Institutional-grade, provider-agnostic air ticketing platform built for **PN Tours and Travel**, strictly compliant with the [DESIGN-Air.md](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/DESIGN-Air.md) institutional Coinbase-inspired design system.
-
----
-
-## 1. System Features & Capabilities
-
-### 1. Customer Retail Portal
-- **Flight Search**: Direct and connecting flight search across 400+ international carriers (Emirates, Uganda Airlines, Qatar Airways, KLM, British Airways, Kenya Airways, Ethiopian Airlines, etc.).
-- **Airport Autocomplete**: Comprehensive worldwide IATA airport dataset (EBB, DXB, LHR, JFK, NBO, AMS, DOH, JNB, etc.).
-- **Multi-Currency Engine**: Live currency switching between **USD ($)**, **UGX (UGX)**, **EUR (€)**, **GBP (£)**, and **KES (KES)** with zero floating-point arithmetic errors (all prices computed in integer minor units).
-- **Instant E-Ticketing**: Complete checkout flow supporting Card (Visa/Mastercard), Mobile Money (MTN & Airtel), and Bank Wire with instant PNR and 13-digit e-ticket receipt generation.
-- **My Trips**: Self-service booking lookup, boarding pass / slip printing, and itinerary retrieval.
-
-### 2. Agent B2B Portal (`/agent`)
-- **Agency Authentication & Dashboard**: Active agency metrics, gross bookings, and net commissions earned.
-- **Prepaid Wallet & Ledger**: Double-entry append-only ledger tracking deposits, booking debits, and adjustments. Atomic ticket payments directly from wallet funds.
-- **Instant Top-up Workflow**: On-demand wallet deposit requests with automatic balance updates.
-- **Client Itineraries**: Agency booking management and printable travel slips.
-
-### 3. Admin Operations Console (`/admin`)
-- **Operations Dashboard**: Real-time metrics on booking volume, ticketing success rate (98.8%), gross revenue, and supplier latency.
-- **Supplier Health Matrix**: Provider status monitoring (`NOT_CONFIGURED`, `SANDBOX_CONNECTED`, `PRODUCTION_PENDING_APPROVAL`, `PRODUCTION_CONNECTED`, `DEGRADED`, `DISABLED`).
-- **Multi-Tier Markup Rules Engine**: Configure fixed or percentage markups with strict precedence (`Agent-specific` > `Route/Airline/Cabin` > `Global Default`).
-- **Ticketing Failure Recovery**: One-click manual retry and void/refund actions for failed ticket jobs.
+> Enterprise-grade, provider-agnostic B2B travel platform for **PN Tours and Travel**, featuring accredited agency onboarding, prepaid wallet management, atomic flight booking holds/captures, compliance review, and internal operations administration.
 
 ---
 
-## 2. Design System Adherence (`DESIGN-Air.md`)
+## 1. System Architecture & Core Portals
 
-- **Canvas & Elevation**: Pure white `#ffffff` floor, soft-gray `#f7f7f7` elevation bands, and signature full-bleed dark hero `#0a0b0d` with elevated product-UI mockup cards (`#16181c`).
-- **Brand Voltage**: Signature Brand Blue (`#0052ff`) used strictly on primary pill CTAs, wordmark, and key highlights.
-- **Geometry**: 100px pills (`rounded-full`) for all interactive buttons and badges; 24px container cards (`rounded-3xl`); 12px form inputs (`rounded-xl`).
-- **Typography**: Inter (weight 400 with -1.5% tracking for display headlines; 400/600 for body) and JetBrains Mono for all tabular flight prices and dates.
+The platform is structured into three connected but strictly separated areas:
+
+### A. Public Website (`/`, `/agency-applications`)
+- **Retail Flight Search**: Flight search across global carriers (Emirates, Uganda Airlines, Qatar Airways, KLM, Kenya Airways, Ethiopian Airlines, etc.).
+- **Agency Accreditation Application**: Full onboarding pipeline for accredited travel agencies with company registration, IATA/TIDS, and operating license details.
+- **Application Tracking**: Secure tracking via readable tracking ID (`PN-APP-XXXXXXXX`).
+- **Strict Boundary**: Public users cannot access agency dashboards, wallet ledgers, or internal consoles.
+
+### B. Agency B2B Portal (`/agent`, `/agency-login`)
+- **Accredited Sign-In**: Dedicated login with tenant isolation.
+- **Prepaid Wallet & Append-Only Ledger**: All financial arithmetic in integer minor units (`amountMinor Int`). Zero floating-point rounding errors.
+- **Atomic Booking Holds & Captures**: Balance is atomically held on booking quote, captured on ticket issuance, and released on cancellation.
+- **Funding Top-Up Requests**: Submission of wire/mobile money deposits with proof of payment attachment (`PN-FND-XXXXXXXX`).
+- **Multi-Tenant Isolation**: Agency A is cryptographically and logically isolated from Agency B.
+
+### C. Internal Operations Console (`/admin`, `/staff-login`)
+- **Accreditation & Compliance Review**: Review agency applications, verify submitted documents, and approve agencies.
+- **Zero-Balance Agency Provisioning**: Approving an agency atomically creates the Agency record (`PN-AGY-XXXXXXXX`), initial zero-balance Wallet, and invites the Agency Owner via Supabase Auth.
+- **Maker-Checker Financial Approvals**: High-value adjustments require two distinct finance officers (initiator cannot self-approve).
+- **Agency Lifecycle**: Audit-logged agency suspension and reactivation.
+- **Immutable Audit Trail**: Paginated inspection of audit logs covering authentication, wallet mutations, and ticket issuance.
+
+---
+
+## 2. Technology Stack
+
+- **Framework**: Next.js 14 (App Router), React 18, TypeScript.
+- **Database**: Supabase PostgreSQL on AWS EU-West-1.
+- **ORM**: Prisma ORM 5.22.
+- **Security & RBAC**: Row Level Security (RLS) enabled on all 35 tables; server-side granular permissions engine.
+- **Authentication**: Supabase Auth (Email/Password, Session Cookies, TOTP MFA).
+- **Storage**: Supabase Storage with private buckets and short-lived signed URLs.
+- **Testing**: Vitest unit & integration test suite (31 tests passed).
+- **Deployment**: Vercel-ready with automated build script.
 
 ---
 
@@ -44,42 +51,48 @@
 
 ### Installation & Running Locally
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Run unit & integration tests
-npm test
+# 2. Push schema to Supabase PostgreSQL (if needed)
+npx prisma db push
 
-# Verify strict TypeScript compilation
+# 3. Seed roles and permissions matrix
+npx tsx prisma/seed-roles.ts
+
+# 4. Verify TypeScript compilation
 npm run typecheck
 
-# Start development server
+# 5. Run full test suite
+npm test
+
+# 6. Build production bundle
+npm run build
+
+# 7. Start server
 npm run dev
 ```
 
-Visit `http://localhost:3000` in your browser:
-- **Customer Portal**: `http://localhost:3000/`
-- **Customer My Trips**: `http://localhost:3000/account/trips`
-- **Agent B2B Portal**: `http://localhost:3000/agent`
-- **Admin Operations**: `http://localhost:3000/admin`
-- **Health Endpoint**: `http://localhost:3000/api/v1/health`
+---
+
+## 4. Super Admin Bootstrap CLI
+
+To provision the initial Super Admin user without exposing credentials:
+```bash
+export INITIAL_SUPER_ADMIN_EMAIL="admin@pntoursandtravel.com"
+export INITIAL_SUPER_ADMIN_NAME="Denis Ayiko (Super Admin)"
+export INITIAL_SUPER_ADMIN_PASSWORD="Your-Secure-16-Character-Password!"
+
+npm run bootstrap:super-admin
+```
+The command provisions the user in Supabase Auth, links the Prisma User record, assigns the `SUPER_ADMIN` role, writes an immutable audit record, and refuses duplicate executions.
 
 ---
 
-## 4. Test Suite
+## 5. Documentation Directory
 
-The test suite covers financial arithmetic, pricing precedence, wallet ledger safety, and booking state transitions:
-```bash
-npm test
-```
-- `tests/pricing.test.ts`: Minor unit math, multi-currency conversion, agent markup precedence over airline/global rules.
-- `tests/wallet-and-state.test.ts`: Wallet deposit, atomic booking debit, insufficient funds rejection, audit trail enforcement, and booking state machine transition validation.
-
----
-
-## 5. Deployment with Docker
-
-```bash
-# Build and run with Docker Compose (PostgreSQL, Redis, App)
-docker-compose up --build
-```
+- [API Reference](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/docs/API.md)
+- [RBAC & Tenant Isolation](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/docs/RBAC.md)
+- [Prepaid Wallet & Booking Workflows](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/docs/WALLET_AND_BOOKING_WORKFLOWS.md)
+- [Supabase Configuration Guide](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/docs/SUPABASE_SETUP.md)
+- [Deployment Runbook](file:///c:/Users/ayiko/Desktop/PntoursandTravel%20air%20Ticketing/docs/DEPLOYMENT.md)

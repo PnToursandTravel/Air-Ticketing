@@ -44,7 +44,7 @@ describe("Database Hydration & User Queries", () => {
     expect(user?.email).toBe("admin@pntoursandtravel.com");
     expect(user?.role).toBe("SUPER_ADMIN");
     expect(user?.isActive).toBe(true);
-    expect(verifyPassword("Admin@PN2026!", user!.passwordHash)).toBe(true);
+    expect(verifyPassword("Admin@PN2026!", user!.passwordHash!)).toBe(true);
   });
 
   it("queries agency records from database", async () => {
