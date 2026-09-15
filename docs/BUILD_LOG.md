@@ -102,3 +102,23 @@ All engineering milestones, architectural changes, testing results, and next act
   - Verified test suite: 17/17 tests passing in Vitest.
   - Verified production build: 16 routes compiled cleanly with 0 errors.
   - Verified browser subagent flow: confirmed customer-only navbar, footer partner links, agency login/logout, and admin credentials management with edit modal.
+
+---
+
+## Milestone 5: Serverless SQLite Persistence & Error 14 Auto-Hydration Resolution
+- **Date**: 2026-09-15
+- **Status**: Completed
+- **Problem Statement**:
+  - In serverless cloud deployments (such as Vercel and AWS Lambda), the runtime deployment root (`/var/task`) is strictly mounted as a read-only filesystem (`EROFS`).
+  - SQLite requires read-write access for locking and journaling (`-wal` / `-shm` / `-journal`). When Next.js API routes executed `prisma.user.findUnique()`, the POSIX read-only constraint resulted in:
+    `Invalid prisma.user.findUnique() invocation: Error querying the database: Error code 14: Unable to open the database file`
+- **Solution & Architecture**:
+  - Implemented serverless runtime detection in `lib/db/prisma.ts`. On Vercel / serverless platforms, the database is mapped to `/tmp/dev.db` (the only writable directory).
+  - Created `lib/db/embedded-db.ts` containing an embedded base64 snapshot of the pre-seeded SQLite database.
+  - On cold boot, if `/tmp/dev.db` is not present, `prisma.ts` attempts to copy the bundled database from candidate disk locations, and falls back to instantly hydrating `/tmp/dev.db` from the embedded snapshot with full read-write permissions (`0o666`).
+  - Configured `next.config.mjs` with `experimental.outputFileTracingIncludes` to ensure `prisma/dev.db` and schema are packaged with serverless bundles.
+  - Added unit and integration tests in `tests/auth-and-db.test.ts` verifying that seeded credentials, agency records, and serverless snapshot hydration all function smoothly.
+- **Verification**:
+  - Vitest test suite: 20/20 tests passed cleanly.
+  - Next.js production build: 16 routes compiled with zero errors and zero warnings.
+

@@ -32,3 +32,58 @@ describe("Database Security & Secret Masking", () => {
     expect(DbSettingsService.maskSecret("short")).toBe("••••••••");
   });
 });
+
+describe("Database Hydration & User Queries", () => {
+  it("queries the user table and retrieves the seeded super admin", async () => {
+    const { prisma } = await import("@/lib/db/prisma");
+    const user = await prisma.user.findUnique({
+      where: { email: "admin@pntoursandtravel.com" },
+    });
+
+    expect(user).not.toBeNull();
+    expect(user?.email).toBe("admin@pntoursandtravel.com");
+    expect(user?.role).toBe("SUPER_ADMIN");
+    expect(user?.isActive).toBe(true);
+    expect(verifyPassword("Admin@PN2026!", user!.passwordHash)).toBe(true);
+  });
+
+  it("queries agency records from database", async () => {
+    const { prisma } = await import("@/lib/db/prisma");
+    const agencies = await prisma.agency.findMany();
+
+    expect(agencies.length).toBeGreaterThan(0);
+    expect(agencies[0].contactEmail).toBe("agent@pntoursandtravel.com");
+  });
+
+  it("hydrates and queries cleanly from embedded database snapshot", async () => {
+    const { EMBEDDED_DEV_DB_BASE64 } = await import("@/lib/db/embedded-db");
+    const { PrismaClient } = await import("@prisma/client");
+    const fs = await import("fs");
+    const path = await import("path");
+    const os = await import("os");
+
+    expect(EMBEDDED_DEV_DB_BASE64.length).toBeGreaterThan(1000);
+    
+    // Simulate serverless tmp database
+    const testTmpDb = path.join(os.tmpdir(), `test-serverless-${Date.now()}.db`);
+    fs.writeFileSync(testTmpDb, Buffer.from(EMBEDDED_DEV_DB_BASE64, "base64"));
+
+    const client = new PrismaClient({
+      datasources: {
+        db: {
+          url: `file:${testTmpDb.replace(/\\/g, "/")}`,
+        },
+      },
+    });
+
+    const admin = await client.user.findUnique({
+      where: { email: "admin@pntoursandtravel.com" },
+    });
+
+    expect(admin).not.toBeNull();
+    expect(admin?.role).toBe("SUPER_ADMIN");
+
+    await client.$disconnect();
+  });
+});
+
