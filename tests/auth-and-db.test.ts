@@ -55,35 +55,19 @@ describe("Database Hydration & User Queries", () => {
     expect(agencies[0].contactEmail).toBe("agent@pntoursandtravel.com");
   });
 
-  it("hydrates and queries cleanly from embedded database snapshot", async () => {
-    const { EMBEDDED_DEV_DB_BASE64 } = await import("@/lib/db/embedded-db");
-    const { PrismaClient } = await import("@prisma/client");
+  it("verifies exported backup data integrity", async () => {
     const fs = await import("fs");
     const path = await import("path");
-    const os = await import("os");
+    const jsonPath = path.resolve("./prisma/sqlite_backup_data.json");
+    expect(fs.existsSync(jsonPath)).toBe(true);
 
-    expect(EMBEDDED_DEV_DB_BASE64.length).toBeGreaterThan(1000);
-    
-    // Simulate serverless tmp database
-    const testTmpDb = path.join(os.tmpdir(), `test-serverless-${Date.now()}.db`);
-    fs.writeFileSync(testTmpDb, Buffer.from(EMBEDDED_DEV_DB_BASE64, "base64"));
-
-    const client = new PrismaClient({
-      datasources: {
-        db: {
-          url: `file:${testTmpDb.replace(/\\/g, "/")}`,
-        },
-      },
-    });
-
-    const admin = await client.user.findUnique({
-      where: { email: "admin@pntoursandtravel.com" },
-    });
-
-    expect(admin).not.toBeNull();
-    expect(admin?.role).toBe("SUPER_ADMIN");
-
-    await client.$disconnect();
+    const data = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+    expect(data.users.length).toBe(3);
+    const admin = data.users.find((u: any) => u.email === "admin@pntoursandtravel.com");
+    expect(admin).toBeDefined();
+    expect(admin.role).toBe("SUPER_ADMIN");
+    expect(verifyPassword("Admin@PN2026!", admin.passwordHash)).toBe(true);
   });
 });
+
 
