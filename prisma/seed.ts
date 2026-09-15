@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../lib/auth/password";
+import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -32,10 +33,14 @@ async function main() {
     },
   });
 
-  // 3. Create Users with Hashed Passwords
-  const adminPasswordHash = hashPassword("Admin@PN2026!");
-  const agentPasswordHash = hashPassword("Agent@PN2026!");
-  const customerPasswordHash = hashPassword("Customer@PN2026!");
+  // 3. Create Users with Secure Non-Hardcoded Credentials
+  const adminSecret = process.env.INITIAL_SUPER_ADMIN_PASSWORD || crypto.randomBytes(16).toString("hex");
+  const agentSecret = process.env.INITIAL_AGENT_PASSWORD || crypto.randomBytes(16).toString("hex");
+  const customerSecret = crypto.randomBytes(16).toString("hex");
+
+  const adminPasswordHash = hashPassword(adminSecret);
+  const agentPasswordHash = hashPassword(agentSecret);
+  const customerPasswordHash = hashPassword(customerSecret);
 
   const adminUser = await prisma.user.create({
     data: {

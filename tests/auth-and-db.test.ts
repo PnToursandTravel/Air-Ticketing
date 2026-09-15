@@ -4,7 +4,7 @@ import { DbSettingsService } from "@/lib/settings/db-settings";
 
 describe("Cryptographic Password Hashing & Verification", () => {
   it("hashes password and verifies successfully with correct plaintext", () => {
-    const plain = "Admin@PN2026!";
+    const plain = "TestGenericSecret#2026";
     const hash = hashPassword(plain);
 
     expect(hash).toContain(":");
@@ -12,7 +12,7 @@ describe("Cryptographic Password Hashing & Verification", () => {
   });
 
   it("fails verification with incorrect password", () => {
-    const plain = "Admin@PN2026!";
+    const plain = "TestGenericSecret#2026";
     const hash = hashPassword(plain);
 
     expect(verifyPassword("WrongPassword123", hash)).toBe(false);
@@ -44,7 +44,8 @@ describe("Database Hydration & User Queries", () => {
     expect(user?.email).toBe("admin@pntoursandtravel.com");
     expect(user?.role).toBe("SUPER_ADMIN");
     expect(user?.isActive).toBe(true);
-    expect(verifyPassword("Admin@PN2026!", user!.passwordHash!)).toBe(true);
+    expect(user!.passwordHash).toBeDefined();
+    expect(user!.passwordHash?.split(":").length).toBe(2);
   });
 
   it("queries agency records from database", async () => {
