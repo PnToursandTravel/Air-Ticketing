@@ -122,3 +122,23 @@ All engineering milestones, architectural changes, testing results, and next act
   - Vitest test suite: 20/20 tests passed cleanly.
   - Next.js production build: 16 routes compiled with zero errors and zero warnings.
 
+---
+
+## Milestone 6: Supabase PostgreSQL Migration, MCP Server Integration & Live E2E Verification
+- **Date**: 2026-09-15
+- **Status**: Completed
+- **Completed Work**:
+  - Migrated primary database from local SQLite to **Supabase PostgreSQL** (`aws-1-eu-west-1.pooler.supabase.com`).
+  - Applied and verified Prisma migrations: 36 public tables deployed with zero pending migrations.
+  - Configured Model Context Protocol (MCP) server integration in `.mcp.json` pointing to `https://mcp.supabase.com/mcp` for agentic database querying and documentation tools.
+  - Verified remote GitHub repository (`PnToursandTravel/Air-Ticketing`) on `main` branch.
+  - Verified Vercel CI/CD build command (`prisma generate && prisma migrate deploy && next build`).
+  - Executed automated Vitest test suite across all 4 suites: 31/31 tests passing (Auth, RBAC, Financial Ledger, Idempotency, Pricing).
+  - Executed production build and end-to-end tests: verified `/api/v1/health` (`HEALTHY`, database `CONNECTED`), `/api/v1/flights/search` (8 live flight offers returned), and browser UI flows.
+- **Verification**:
+  - Test Suite: 31/31 passing tests.
+  - TypeScript: 0 type errors.
+  - Next.js Build: 25 static and dynamic pages generated.
+  - Live Endpoints: Health check and flight search returning live data.
+
+
