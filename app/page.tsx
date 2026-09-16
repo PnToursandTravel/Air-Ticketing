@@ -81,7 +81,7 @@ export default function HomePage() {
       originCode: "EBB",
       basePriceMinorUSD: 24000,
       airline: "Uganda Airlines & Kenya Airways",
-      image: "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?auto=format&fit=crop&w=600&q=80",
+      image: "/images/destinations/nairobi.jpg",
       tag: "Short Haul",
     },
     {
