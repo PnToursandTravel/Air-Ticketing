@@ -19,17 +19,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        "bg-primary text-on-primary hover:bg-primary-active active:bg-primary-active disabled:bg-primary-disabled disabled:text-on-primary/70",
+        "bg-primary text-on-primary hover:bg-accent-gold active:bg-primary-active disabled:bg-primary-disabled disabled:text-on-primary/60 font-bold shadow-sm",
       "pill-cta":
-        "bg-primary text-on-primary hover:bg-primary-active active:bg-primary-active text-lg px-8 py-4 h-14 disabled:bg-primary-disabled shadow-sm",
+        "bg-primary text-on-primary hover:bg-accent-gold active:bg-primary-active text-lg px-8 py-4 h-14 disabled:bg-primary-disabled font-bold shadow-md",
       "secondary-light":
-        "bg-surface-strong text-ink hover:bg-hairline active:bg-hairline-soft border border-hairline/40",
+        "bg-surface-card text-ink hover:bg-surface-soft active:bg-surface-soft/80 border border-hairline",
       "secondary-dark":
-        "bg-surface-dark-elevated text-on-dark hover:bg-surface-dark-elevated/80 border border-white/10",
+        "bg-surface-card text-on-dark hover:bg-surface-soft border border-hairline",
       "outline-on-dark":
-        "bg-transparent text-on-dark border border-white/30 hover:border-white active:bg-white/10",
+        "bg-transparent text-on-dark border border-hairline hover:border-primary hover:text-primary active:bg-primary/10",
       "tertiary-text":
-        "bg-transparent text-primary hover:text-primary-active underline-offset-4 hover:underline p-0 h-auto font-medium",
+        "bg-transparent text-primary hover:text-accent-gold underline-offset-4 hover:underline p-0 h-auto font-semibold",
     };
 
     const sizeStyles = {

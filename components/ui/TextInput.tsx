@@ -22,7 +22,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           id={inputId}
           ref={ref}
           className={cn(
-            "w-full h-12 px-4 py-3 bg-canvas text-ink text-sm rounded-md border border-hairline transition-all duration-150 outline-none",
+            "w-full h-12 px-4 py-3 bg-surface-soft text-ink text-sm rounded-md border border-hairline transition-all duration-150 outline-none",
             "placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20",
             error && "border-semantic-down focus:border-semantic-down focus:ring-semantic-down/20",
             className

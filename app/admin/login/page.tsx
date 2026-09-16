@@ -58,12 +58,12 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-surface-dark-elevated rounded-xl p-8 border border-white/10 shadow-2xl space-y-6">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="bg-surface-dark-elevated rounded-xl p-8 border border-hairline shadow-2xl space-y-6">
+          <div className="flex items-center justify-between border-b border-hairline pb-4">
             <span className="text-xs font-mono uppercase text-on-dark-soft tracking-wider">
               Security Level: Tier 1
             </span>
-            <Badge variant="pill-dark" className="border-white/20">
+            <Badge variant="pill-dark" className="border-hairline">
               RBAC Enforced
             </Badge>
           </div>
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@pntoursandtravel.com"
-                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-white/15 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-white/15 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
 

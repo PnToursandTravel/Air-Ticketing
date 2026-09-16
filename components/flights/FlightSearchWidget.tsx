@@ -66,18 +66,18 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
     <form
       action="javascript:void(0);"
       onSubmit={handleSearchSubmit}
-      className="w-full bg-canvas rounded-xl p-4 sm:p-8 border border-hairline shadow-soft-drop"
+      className="w-full bg-surface-card rounded-xl p-4 sm:p-8 border border-hairline shadow-2xl"
     >
       {/* Top Filter Bar: Trip Type, Cabin Class, & Passengers */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-5 border-b border-hairline">
         {/* Trip type toggle pills */}
-        <div className="inline-flex p-1 bg-surface-strong rounded-pill self-start">
+        <div className="inline-flex p-1 bg-surface-soft rounded-pill self-start border border-hairline/50">
           <button
             type="button"
             onClick={() => setTripType("ROUND_TRIP")}
             className={`px-3.5 sm:px-4 py-2 text-xs font-semibold rounded-pill transition-all min-h-[36px] ${
               tripType === "ROUND_TRIP"
-                ? "bg-canvas text-ink shadow-sm font-bold"
+                ? "bg-primary text-on-primary shadow-sm font-bold"
                 : "text-muted hover:text-ink"
             }`}
           >
@@ -88,7 +88,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
             onClick={() => setTripType("ONE_WAY")}
             className={`px-3.5 sm:px-4 py-2 text-xs font-semibold rounded-pill transition-all min-h-[36px] ${
               tripType === "ONE_WAY"
-                ? "bg-canvas text-ink shadow-sm font-bold"
+                ? "bg-primary text-on-primary shadow-sm font-bold"
                 : "text-muted hover:text-ink"
             }`}
           >
@@ -102,7 +102,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
           <select
             value={cabinClass}
             onChange={(e) => setCabinClass(e.target.value as CabinClass)}
-            className="h-10 px-3 bg-surface-strong text-ink font-semibold rounded-pill border-none outline-none cursor-pointer hover:bg-hairline transition-colors flex-1 sm:flex-initial"
+            className="h-10 px-3 bg-surface-soft text-ink font-semibold rounded-pill border border-hairline outline-none cursor-pointer hover:border-primary/40 transition-colors flex-1 sm:flex-initial"
             aria-label="Cabin Class"
           >
             <option value="ECONOMY">Economy</option>
@@ -118,7 +118,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
               onClick={() => setPaxOpen(!paxOpen)}
               aria-expanded={paxOpen}
               aria-label="Select passengers"
-              className="h-10 px-3 bg-surface-strong text-ink font-semibold rounded-pill flex items-center justify-center space-x-1.5 hover:bg-hairline transition-colors w-full sm:w-auto"
+              className="h-10 px-3 bg-surface-soft text-ink font-semibold rounded-pill flex items-center justify-center space-x-1.5 border border-hairline hover:border-primary/40 transition-colors w-full sm:w-auto"
             >
               <Users className="w-3.5 h-3.5 text-primary flex-shrink-0" />
               <span className="truncate">
@@ -127,7 +127,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
             </button>
 
             {paxOpen && (
-              <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-canvas rounded-xl border border-hairline shadow-2xl p-4 z-50 space-y-4">
+              <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-surface-card rounded-xl border border-hairline shadow-2xl p-4 z-50 space-y-4">
                 <div className="flex items-center justify-between text-xs">
                   <div>
                     <span className="font-bold text-ink block">Adults</span>
@@ -139,17 +139,17 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       disabled={adults <= 1}
                       onClick={() => setAdults(adults - 1)}
                       aria-label="Decrease adults"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-6 text-center font-mono font-bold">{adults}</span>
+                    <span className="w-6 text-center font-mono font-bold text-ink">{adults}</span>
                     <button
                       type="button"
                       disabled={adults >= 9}
                       onClick={() => setAdults(adults + 1)}
                       aria-label="Increase adults"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -167,17 +167,17 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       disabled={childrenCount <= 0}
                       onClick={() => setChildrenCount(childrenCount - 1)}
                       aria-label="Decrease children"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-6 text-center font-mono font-bold">{childrenCount}</span>
+                    <span className="w-6 text-center font-mono font-bold text-ink">{childrenCount}</span>
                     <button
                       type="button"
                       disabled={childrenCount >= 8}
                       onClick={() => setChildrenCount(childrenCount + 1)}
                       aria-label="Increase children"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -195,17 +195,17 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                       disabled={infants <= 0}
                       onClick={() => setInfants(infants - 1)}
                       aria-label="Decrease infants"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       -
                     </button>
-                    <span className="w-6 text-center font-mono font-bold">{infants}</span>
+                    <span className="w-6 text-center font-mono font-bold text-ink">{infants}</span>
                     <button
                       type="button"
                       disabled={infants >= adults}
                       onClick={() => setInfants(infants + 1)}
                       aria-label="Increase infants"
-                      className="w-8 h-8 rounded-pill bg-surface-strong font-bold text-ink disabled:opacity-40 min-h-[32px] flex items-center justify-center"
+                      className="w-8 h-8 rounded-pill bg-surface-soft font-bold text-ink border border-hairline hover:bg-hairline disabled:opacity-40 min-h-[32px] flex items-center justify-center"
                     >
                       +
                     </button>
@@ -248,7 +248,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
               onClick={swapAirports}
               title="Swap Origin & Destination"
               aria-label="Swap Origin & Destination"
-              className="w-10 h-10 rounded-pill bg-surface-strong hover:bg-hairline active:bg-primary/20 text-ink flex items-center justify-center transition-transform hover:rotate-180 duration-300 shadow-sm border border-hairline"
+              className="w-10 h-10 rounded-pill bg-surface-soft hover:bg-hairline active:bg-primary/20 text-primary flex items-center justify-center transition-transform hover:rotate-180 duration-300 shadow-sm border border-hairline"
             >
               <ArrowLeftRight className="w-4 h-4 text-primary" />
             </button>
@@ -279,7 +279,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
                 setDepartureDate(e.target.value);
                 if (returnDate < e.target.value) setReturnDate(e.target.value);
               }}
-              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
+              className="w-full h-14 px-4 bg-surface-soft text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
               aria-label="Departure Date"
             />
           </div>
@@ -298,7 +298,7 @@ export const FlightSearchWidget: React.FC<FlightSearchWidgetProps> = ({
               min={departureDate}
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
-              className="w-full h-14 px-4 bg-canvas text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
+              className="w-full h-14 px-4 bg-surface-soft text-ink text-sm font-mono rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[56px]"
               aria-label="Return Date"
             />
           </div>

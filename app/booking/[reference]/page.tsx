@@ -62,7 +62,7 @@ export default function BookingConfirmationPage() {
 
       <main className="flex-1 py-12 px-4 sm:px-8 max-w-4xl mx-auto w-full space-y-8">
         {/* Top Success Banner */}
-        <div className="bg-canvas rounded-xl p-8 border border-hairline shadow-soft-drop text-center space-y-4">
+        <div className="bg-surface-card rounded-xl p-8 border border-hairline shadow-soft-drop text-center space-y-4">
           <div className="w-14 h-14 rounded-pill bg-semantic-up/10 text-semantic-up flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-8 h-8" />
           </div>
@@ -99,9 +99,9 @@ export default function BookingConfirmationPage() {
         </div>
 
         {/* E-Ticket Official Slip Card */}
-        <div className="bg-canvas rounded-xl border border-hairline shadow-lg overflow-hidden">
+        <div className="bg-surface-card rounded-xl border border-hairline shadow-lg overflow-hidden">
           {/* Slip Header */}
-          <div className="bg-surface-dark text-on-dark p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-surface-soft text-on-dark p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <img
                 src="https://www.image2url.com/r2/default/images/1789406854595-5200c580-b543-4d37-b30f-73c90d73d473.png"
@@ -143,7 +143,7 @@ export default function BookingConfirmationPage() {
               </h3>
               <div className="divide-y divide-hairline-soft border border-hairline rounded-md overflow-hidden">
                 {booking.passengers.map((pax, i) => (
-                  <div key={i} className="p-4 bg-canvas flex items-center justify-between text-xs">
+                  <div key={i} className="p-4 bg-surface-soft flex items-center justify-between text-xs">
                     <div>
                       <span className="font-bold text-sm text-ink block">
                         {pax.title} {pax.firstName} {pax.lastName}

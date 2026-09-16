@@ -176,7 +176,7 @@ export default function CheckoutPage() {
                   <select
                     value={passengers[0].title}
                     onChange={(e) => handlePassengerChange(0, "title", e.target.value)}
-                    className="w-full h-12 px-3 bg-canvas text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary"
+                    className="w-full h-12 px-3 bg-surface-soft text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary"
                   >
                     <option value="MR">Mr.</option>
                     <option value="MRS">Mrs.</option>
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
                   <select
                     value={passengers[0].nationality || "UG"}
                     onChange={(e) => handlePassengerChange(0, "nationality", e.target.value)}
-                    className="w-full h-12 px-3 bg-canvas text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary"
+                    className="w-full h-12 px-3 bg-surface-soft text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary"
                   >
                     <option value="UG">Uganda (UG)</option>
                     <option value="KE">Kenya (KE)</option>

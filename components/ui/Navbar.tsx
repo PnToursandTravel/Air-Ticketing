@@ -40,9 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const navClasses = darkHero
-    ? "bg-surface-dark text-on-dark border-b border-white/10"
-    : "bg-canvas text-ink border-b border-hairline";
+  const navClasses = "bg-canvas text-ink border-b border-hairline";
 
   const linkActive = (href: string) => {
     if (href === "/" && pathname === "/") return true;
@@ -53,13 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-200 ${navClasses}`}>
       {/* Top micro-bar: 24/7 hotline and multi-currency */}
-      <div
-        className={`text-xs py-1.5 px-3 sm:px-8 border-b ${
-          darkHero
-            ? "border-white/10 bg-surface-dark-elevated text-on-dark-soft"
-            : "border-hairline bg-surface-soft text-body"
-        }`}
-      >
+      <div className="text-xs py-1.5 px-3 sm:px-8 border-b border-hairline bg-surface-soft text-body">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 sm:space-x-4 truncate">
             <span className="flex items-center space-x-1.5 font-medium truncate">
@@ -73,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
                 +256 785360444
               </a>
             </span>
-            <span className="hidden lg:inline text-muted-soft">|</span>
+            <span className="hidden lg:inline text-hairline">|</span>
             <span className="hidden lg:inline text-muted font-normal text-[11px]">
               Direct Global Airline Content • Instant PNR Guarantee
             </span>
@@ -87,11 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
                 onClick={() => setCurrencyOpen(!currencyOpen)}
                 aria-expanded={currencyOpen}
                 aria-label="Select currency"
-                className={`flex items-center space-x-1.5 font-mono text-xs px-2.5 py-1 rounded-pill border transition-colors min-h-[32px] ${
-                  darkHero
-                    ? "border-white/20 text-on-dark hover:bg-white/10"
-                    : "border-hairline text-ink bg-canvas hover:bg-surface-soft"
-                }`}
+                className="flex items-center space-x-1.5 font-mono text-xs px-2.5 py-1 rounded-pill border border-hairline text-ink bg-surface-soft hover:bg-surface-card transition-colors min-h-[32px]"
               >
                 <Globe className="w-3 h-3 text-primary flex-shrink-0" />
                 <span className="font-bold">{currency}</span>
@@ -99,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               </button>
 
               {currencyOpen && (
-                <div className="absolute right-0 mt-1 w-36 bg-canvas text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
+                <div className="absolute right-0 mt-1 w-36 bg-surface-card text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
                   <div className="px-3 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-hairline">
                     Select Currency
                   </div>

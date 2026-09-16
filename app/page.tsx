@@ -292,7 +292,7 @@ export default function HomePage() {
                 <button
                   key={`${r.from}-${r.to}`}
                   onClick={() => handleQuickRoute(r.from, r.to)}
-                  className="px-3.5 py-1.5 rounded-pill bg-surface-dark-elevated hover:bg-white/10 text-on-dark text-xs font-medium border border-white/15 transition-colors flex items-center space-x-1.5 group flex-shrink-0 min-h-[36px]"
+                  className="px-3.5 py-1.5 rounded-pill bg-surface-card hover:bg-surface-soft text-ink text-xs font-medium border border-hairline transition-colors flex items-center space-x-1.5 group flex-shrink-0 min-h-[36px]"
                 >
                   <Compass className="w-3 h-3 text-primary group-hover:rotate-45 transition-transform flex-shrink-0" />
                   <span className="whitespace-nowrap">{r.label}</span>
@@ -444,21 +444,21 @@ export default function HomePage() {
               <div
                 key={deal.city}
                 onClick={() => handleQuickRoute(deal.originCode, deal.airportCode)}
-                className="bg-canvas rounded-xl overflow-hidden border border-hairline shadow-soft-drop hover:shadow-lg transition-all duration-200 cursor-pointer group flex flex-col justify-between"
+                className="bg-surface-card rounded-xl overflow-hidden border border-hairline shadow-soft-drop hover:shadow-xl hover:border-primary/40 transition-all duration-200 cursor-pointer group flex flex-col justify-between"
               >
-                <div className="h-44 w-full relative overflow-hidden bg-surface-strong">
+                <div className="h-44 w-full relative overflow-hidden bg-surface-soft">
                   <img
                     src={deal.image}
                     alt={deal.city}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 right-3">
-                    <span className="bg-ink/80 backdrop-blur-sm text-on-dark text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-pill">
+                    <span className="bg-canvas/90 backdrop-blur-sm text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-pill border border-hairline">
                       {deal.tag}
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3">
-                    <span className="bg-canvas/90 backdrop-blur-sm text-ink text-xs font-mono font-bold px-2.5 py-1 rounded-md">
+                    <span className="bg-canvas/90 backdrop-blur-sm text-ink text-xs font-mono font-bold px-2.5 py-1 rounded-md border border-hairline">
                       {deal.originCode} → {deal.airportCode}
                     </span>
                   </div>
@@ -517,9 +517,9 @@ export default function HomePage() {
           ].map((airline) => (
             <div
               key={airline.code}
-              className="bg-canvas p-4 sm:p-6 rounded-xl border border-hairline hover:border-primary/40 transition-all flex items-center space-x-3.5 shadow-soft-drop"
+              className="bg-surface-card p-4 sm:p-6 rounded-xl border border-hairline hover:border-primary/40 transition-all flex items-center space-x-3.5 shadow-soft-drop"
             >
-              <div className="w-10 h-10 rounded-pill bg-surface-strong flex items-center justify-center font-mono font-bold text-xs text-primary">
+              <div className="w-10 h-10 rounded-pill bg-surface-soft flex items-center justify-center font-mono font-bold text-xs text-primary border border-hairline">
                 {airline.code}
               </div>
               <div>

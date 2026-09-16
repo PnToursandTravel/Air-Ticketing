@@ -10,42 +10,45 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#0052ff",
-          active: "#003ecc",
-          disabled: "#a8b8cc",
-        },
-        ink: "#0a0b0d",
-        body: {
-          DEFAULT: "#5b616e",
-          strong: "#0a0b0d",
-        },
-        muted: {
-          DEFAULT: "#7c828a",
-          soft: "#a8acb3",
-        },
-        hairline: {
-          DEFAULT: "#dee1e6",
-          soft: "#eef0f3",
-        },
-        canvas: "#ffffff",
-        surface: {
-          soft: "#f7f7f7",
-          card: "#ffffff",
-          strong: "#eef0f3",
-          dark: "#0a0b0d",
-          "dark-elevated": "#16181c",
-        },
-        "on-primary": "#ffffff",
-        "on-dark": {
-          DEFAULT: "#ffffff",
-          soft: "#a8acb3",
-        },
-        semantic: {
-          up: "#05b169",
-          down: "#cf202f",
+          DEFAULT: "#D4AF37", // Royal Gold
+          bright: "#F2C94C",  // Accent Gold
+          active: "#B8972E",  // Deepened Gold
+          disabled: "#5A4B20",
         },
         accent: {
-          yellow: "#f4b000",
+          gold: "#F2C94C",    // Accent Gold
+          yellow: "#F2C94C",
+        },
+        ink: "#F5F7FA",       // Soft White (White Text)
+        body: {
+          DEFAULT: "#A7B1C2", // Cool Gray (Secondary Text)
+          strong: "#F5F7FA",  // Soft White
+        },
+        muted: {
+          DEFAULT: "#A7B1C2", // Cool Gray
+          soft: "#738096",
+        },
+        hairline: {
+          DEFAULT: "#24384D", // Subtle Blue Gray (Border)
+          soft: "#1A2A3A",
+        },
+        canvas: "#07111F",    // Deep Navy (Primary Background)
+        surface: {
+          soft: "#0D1B2A",    // Navy Blue (Secondary Background)
+          secondary: "#0D1B2A",
+          card: "#12263A",    // Dark Slate (Card Background)
+          strong: "#12263A",  // Dark Slate
+          dark: "#07111F",    // Deep Navy
+          "dark-elevated": "#12263A", // Dark Slate
+        },
+        "on-primary": "#07111F", // Deep Navy text on Royal Gold
+        "on-dark": {
+          DEFAULT: "#F5F7FA", // Soft White
+          soft: "#A7B1C2",    // Cool Gray
+        },
+        semantic: {
+          up: "#22C55E",      // Green (Success/Profit)
+          down: "#EF4444",    // Red (Danger/Loss)
         },
       },
       borderRadius: {

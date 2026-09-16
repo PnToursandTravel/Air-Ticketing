@@ -63,13 +63,13 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
         aria-expanded={open}
         aria-haspopup="listbox"
         className={cn(
-          "w-full h-14 px-4 py-2 bg-canvas text-left rounded-md border border-hairline transition-all duration-150 flex items-center justify-between group hover:border-muted min-h-[56px]",
+          "w-full h-14 px-4 py-2 bg-surface-soft text-left rounded-md border border-hairline transition-all duration-150 flex items-center justify-between group hover:border-primary min-h-[56px]",
           open && "border-primary ring-2 ring-primary/20",
           error && "border-semantic-down"
         )}
       >
         <div className="flex items-center space-x-3 overflow-hidden">
-          <div className="w-8 h-8 rounded-pill bg-surface-strong flex items-center justify-center flex-shrink-0 text-muted group-hover:text-primary transition-colors">
+          <div className="w-8 h-8 rounded-pill bg-surface-card flex items-center justify-center flex-shrink-0 text-muted group-hover:text-primary transition-colors">
             <Plane className="w-4 h-4" />
           </div>
           <div className="flex flex-col truncate">
@@ -92,7 +92,7 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
 
       {/* Popover list */}
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-full max-w-[calc(100vw-2rem)] sm:w-80 bg-canvas rounded-xl border border-hairline shadow-2xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-full max-w-[calc(100vw-2rem)] sm:w-80 bg-surface-card rounded-xl border border-hairline shadow-2xl z-50 overflow-hidden">
           {/* Search input header */}
           <div className="p-3 border-b border-hairline bg-surface-soft flex items-center space-x-2">
             <Search className="w-4 h-4 text-muted flex-shrink-0" />
@@ -108,7 +108,7 @@ export const AirportAutocomplete: React.FC<AirportAutocompleteProps> = ({
           </div>
 
           {/* Results list */}
-          <div className="max-h-60 overflow-y-auto divide-y divide-hairline-soft touch-scroll" role="listbox">
+          <div className="max-h-60 overflow-y-auto divide-y divide-hairline touch-scroll" role="listbox">
             {results.length === 0 ? (
               <div className="p-4 text-center text-xs text-muted">No airports found</div>
             ) : (

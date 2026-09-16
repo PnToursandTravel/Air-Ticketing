@@ -9,9 +9,9 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "light", children, ...props }, ref) => {
     const variantStyles = {
       light: "bg-surface-card text-ink border border-hairline shadow-soft-drop",
-      dark: "bg-surface-dark-elevated text-on-dark border border-white/10",
-      soft: "bg-surface-soft text-ink border border-hairline-soft",
-      bordered: "bg-canvas text-ink border border-hairline",
+      dark: "bg-surface-card text-on-dark border border-hairline shadow-soft-drop",
+      soft: "bg-surface-soft text-ink border border-hairline",
+      bordered: "bg-surface-card text-ink border border-hairline",
     };
 
     return (

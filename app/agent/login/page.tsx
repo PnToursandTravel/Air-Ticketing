@@ -60,7 +60,7 @@ export default function AgentLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-surface-soft p-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-canvas p-4">
       {/* Background brand anchor */}
       <div className="w-full max-w-md space-y-6">
         {/* Brand Header */}
@@ -84,12 +84,12 @@ export default function AgentLoginPage() {
         {/* Card Box */}
         <Card variant="light" className="p-8 space-y-6">
           {/* Tab Switcher */}
-          <div className="grid grid-cols-2 p-1 bg-surface-strong rounded-pill text-xs font-semibold">
+          <div className="grid grid-cols-2 p-1 bg-surface-soft border border-hairline rounded-pill text-xs font-semibold">
             <button
               type="button"
               onClick={() => setTab("LOGIN")}
               className={`py-2 rounded-pill transition-all ${
-                tab === "LOGIN" ? "bg-canvas text-ink shadow-sm" : "text-muted hover:text-ink"
+                tab === "LOGIN" ? "bg-primary text-on-primary shadow-sm" : "text-muted hover:text-ink"
               }`}
             >
               Agency Sign In
@@ -98,7 +98,7 @@ export default function AgentLoginPage() {
               type="button"
               onClick={() => setTab("REGISTER")}
               className={`py-2 rounded-pill transition-all ${
-                tab === "REGISTER" ? "bg-canvas text-ink shadow-sm" : "text-muted hover:text-ink"
+                tab === "REGISTER" ? "bg-primary text-on-primary shadow-sm" : "text-muted hover:text-ink"
               }`}
             >
               New Agency Application

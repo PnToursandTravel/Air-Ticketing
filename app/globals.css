@@ -4,16 +4,29 @@
 
 @layer base {
   :root {
-    --primary: #0052ff;
-    --primary-active: #003ecc;
-    --primary-disabled: #a8b8cc;
-    --ink: #0a0b0d;
-    --body: #5b616e;
-    --canvas: #ffffff;
-    --surface-soft: #f7f7f7;
-    --surface-dark: #0a0b0d;
-    --surface-dark-elevated: #16181c;
-    --hairline: #dee1e6;
+    --primary: #D4AF37;
+    --primary-bright: #F2C94C;
+    --primary-active: #B8972E;
+    --primary-disabled: #5A4B20;
+    
+    --bg-primary: #07111F;
+    --bg-secondary: #0D1B2A;
+    --bg-card: #12263A;
+    
+    --text-white: #F5F7FA;
+    --text-secondary: #A7B1C2;
+    --border: #24384D;
+    --success: #22C55E;
+    --danger: #EF4444;
+
+    --ink: #F5F7FA;
+    --body: #A7B1C2;
+    --canvas: #07111F;
+    --surface-soft: #0D1B2A;
+    --surface-card: #12263A;
+    --surface-dark: #07111F;
+    --surface-dark-elevated: #12263A;
+    --hairline: #24384D;
   }
 
   *, *::before, *::after {
@@ -72,14 +85,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f7f7f7;
+  background: #07111F;
 }
 ::-webkit-scrollbar-thumb {
-  background: #dee1e6;
+  background: #24384D;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8acb3;
+  background: #D4AF37;
 }
 
 /* Touch scroll utilities */
