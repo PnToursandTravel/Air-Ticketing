@@ -3,6 +3,8 @@ import { SupplierTicketService } from "@/lib/pricing/supplier-ticket-service";
 import { calculateTicketMarkup } from "@/lib/pricing/bulk-markup-engine";
 import { parseRequestBody } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const settings = await SupplierTicketService.getMarkupSettings();
@@ -84,3 +86,6 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
+
+export const POST = PUT;
+
