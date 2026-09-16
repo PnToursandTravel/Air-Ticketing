@@ -199,31 +199,31 @@ export default function HomePage() {
   return (
     <div className="flex-1 flex flex-col bg-canvas">
       {/* Top Navbar */}
-      <Navbar darkHero={true} />
+      <Navbar darkHero={false} />
 
-      {/* Hero Section: Institutional Dark Canvas (#0a0b0d) matching DESIGN-Air.md */}
-      <section className="bg-surface-dark text-on-dark pt-14 pb-28 px-4 sm:px-8 border-b border-white/10 relative overflow-hidden">
+      {/* Hero Section: Crisp White Canvas with Deep Navy and Royal Gold Branding */}
+      <section className="bg-canvas text-ink pt-14 pb-28 px-4 sm:px-8 border-b border-hairline relative overflow-hidden">
         {/* Subtle geometric dot pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff0d_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />
+        <div className="absolute inset-0 bg-[radial-gradient(#07111f12_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />
 
         <div className="max-w-7xl mx-auto relative z-10 space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-4">
             {/* Left Hero Content */}
             <div className="lg:col-span-7 space-y-6">
               <div className="flex items-center space-x-2">
-                <Badge variant="pill-dark" className="border-white/20 text-on-dark">
+                <Badge variant="pill">
                   IATA Industry Ticketing Standards
                 </Badge>
-                <span className="hidden sm:inline-flex text-xs text-on-dark-soft font-mono">
+                <span className="hidden sm:inline-flex text-xs text-muted font-mono">
                   • 400+ Airlines
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-normal font-sans tracking-tight text-on-dark leading-[1.08]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-normal font-sans tracking-tight text-ink leading-[1.08]">
                 Air travel, booked with <span className="text-primary font-medium">quiet precision.</span>
               </h1>
 
-              <p className="text-sm sm:text-base lg:text-lg text-on-dark-soft max-w-xl leading-relaxed">
+              <p className="text-sm sm:text-base lg:text-lg text-body max-w-xl leading-relaxed">
                 Direct airline flight search, corporate travel management, and instant electronic ticket receipts. Direct access to international carriers with guaranteed PNR issuance.
               </p>
 
@@ -235,7 +235,7 @@ export default function HomePage() {
                   </Button>
                 </a>
                 <a href="#featured-deals" className="w-full sm:w-auto">
-                  <Button variant="outline-on-dark" size="lg" className="w-full justify-center min-h-[48px]">
+                  <Button variant="secondary-light" size="lg" className="w-full justify-center min-h-[48px]">
                     Explore Top Deals
                   </Button>
                 </a>
@@ -284,7 +284,7 @@ export default function HomePage() {
 
           {/* Quick Popular Route Chips (Smooth Touch Flick on Mobile) */}
           <div className="pt-2 space-y-2">
-            <span className="text-xs uppercase font-mono tracking-wider text-on-dark-soft block">
+            <span className="text-xs uppercase font-mono tracking-wider text-muted block">
               Popular Flight Routes
             </span>
             <div className="flex flex-nowrap sm:flex-wrap overflow-x-auto pb-2 sm:pb-0 touch-scroll gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">

@@ -101,7 +101,7 @@ export default function BookingConfirmationPage() {
         {/* E-Ticket Official Slip Card */}
         <div className="bg-surface-card rounded-xl border border-hairline shadow-lg overflow-hidden">
           {/* Slip Header */}
-          <div className="bg-surface-soft text-on-dark p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-surface-dark text-on-dark p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <img
                 src="https://www.image2url.com/r2/default/images/1789406854595-5200c580-b543-4d37-b30f-73c90d73d473.png"
