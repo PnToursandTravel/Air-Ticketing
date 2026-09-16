@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award, Globe, ExternalLink, UserPlus } from "lucide-react";
+import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award, Globe, ExternalLink, UserPlus, Compass, Ticket, CheckCircle2, PhoneCall } from "lucide-react";
 import { Button } from "./Button";
 
 export const Footer: React.FC = () => {
@@ -90,30 +90,35 @@ export const Footer: React.FC = () => {
                   href="https://pntoursandtravel.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center space-x-1 font-semibold text-primary"
+                  className="hover:text-primary transition-colors flex items-center space-x-1.5 font-semibold text-primary"
                 >
+                  <Compass className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                   <span>Tours & Holiday Packages</span>
-                  <ExternalLink className="w-3 h-3 text-muted" />
+                  <ExternalLink className="w-3 h-3 text-muted ml-0.5" />
                 </a>
               </li>
               <li>
-                <Link href="/" className="hover:text-primary transition-colors">
-                  International Flight Search
+                <Link href="/" className="hover:text-primary transition-colors flex items-center space-x-1.5">
+                  <Plane className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span>International Flight Search</span>
                 </Link>
               </li>
               <li>
-                <Link href="/account/trips" className="hover:text-primary transition-colors">
-                  Manage Booking & E-Tickets
+                <Link href="/account/trips" className="hover:text-primary transition-colors flex items-center space-x-1.5">
+                  <Ticket className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span>Manage Booking & E-Tickets</span>
                 </Link>
               </li>
               <li>
-                <Link href="/account/trips" className="hover:text-primary transition-colors">
-                  Check-in Assistance
+                <Link href="/account/trips" className="hover:text-primary transition-colors flex items-center space-x-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span>Check-in Assistance</span>
                 </Link>
               </li>
               <li>
-                <a href="tel:+256785360444" className="hover:text-primary transition-colors">
-                  24/7 Reservations Hotline
+                <a href="tel:+256785360444" className="hover:text-primary transition-colors flex items-center space-x-1.5">
+                  <PhoneCall className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  <span>24/7 Reservations Hotline</span>
                 </a>
               </li>
             </ul>
