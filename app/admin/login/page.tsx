@@ -42,42 +42,44 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-surface-dark p-4 text-on-dark">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-canvas p-4 text-ink">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-pill bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto text-primary">
-            <Shield className="w-6 h-6" />
-          </div>
-          <h1 className="text-2xl font-bold font-sans tracking-tight text-on-dark">
+          <Link href="/" className="inline-flex items-center space-x-2.5 mx-auto">
+            <div className="w-12 h-12 rounded-pill bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary shadow-sm">
+              <Shield className="w-6 h-6" />
+            </div>
+          </Link>
+          <h1 className="text-2xl font-bold font-sans tracking-tight text-ink">
             Internal Operations Console
           </h1>
-          <p className="text-xs text-on-dark-soft">
+          <p className="text-xs text-muted">
             Authorized administrative & compliance personnel only.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-surface-dark-elevated rounded-xl p-8 border border-hairline shadow-2xl space-y-6">
+        <div className="bg-surface-card rounded-xl p-8 border border-hairline shadow-xl space-y-6">
           <div className="flex items-center justify-between border-b border-hairline pb-4">
-            <span className="text-xs font-mono uppercase text-on-dark-soft tracking-wider">
+            <span className="text-xs font-mono uppercase text-muted tracking-wider">
               Security Level: Tier 1
             </span>
-            <Badge variant="pill-dark" className="border-hairline">
+            <Badge variant="pill">
               RBAC Enforced
             </Badge>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-md bg-semantic-down/20 border border-semantic-down/40 text-semantic-down text-xs font-medium flex items-center space-x-2">
+              <div className="p-3 rounded-md bg-semantic-down/10 border border-semantic-down/20 text-semantic-down text-xs font-medium flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-on-dark-soft mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
                 Staff Email Address
               </label>
               <input
@@ -86,12 +88,12 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@pntoursandtravel.com"
-                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full h-12 px-4 bg-surface-soft text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-on-dark-soft mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
                 Admin Password
               </label>
               <input
@@ -100,7 +102,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full h-12 px-4 bg-surface-dark text-on-dark text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full h-12 px-4 bg-surface-soft text-ink text-sm rounded-md border border-hairline outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted"
               />
             </div>
 
@@ -114,7 +116,7 @@ export default function AdminLoginPage() {
             </Button>
           </form>
 
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-on-dark-soft">
+          <div className="pt-2 border-t border-hairline flex items-center justify-between text-xs text-muted">
             <span className="flex items-center space-x-1.5">
               <KeyRound className="w-3.5 h-3.5 text-primary" />
               <span>Audit Logged Session</span>
