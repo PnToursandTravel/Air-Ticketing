@@ -181,9 +181,9 @@ export const Footer: React.FC = () => {
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-muted space-y-4 md:space-y-0 text-center md:text-left">
           <p>© {new Date().getFullYear()} PN Tours and Travel. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <span className="hover:text-ink transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-ink transition-colors cursor-pointer">Terms of Carriage</span>
-            <span className="hover:text-ink transition-colors cursor-pointer">Refund Policies</span>
+            <Link href="/privacy" className="hover:text-ink transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-carriage" className="hover:text-ink transition-colors">Terms of Carriage</Link>
+            <Link href="/refund-policy" className="hover:text-ink transition-colors">Refund Policies</Link>
             <Link href="/admin/login" className="hover:text-ink transition-colors flex items-center space-x-1 text-muted">
               <Lock className="w-3 h-3" />
               <span>Internal</span>

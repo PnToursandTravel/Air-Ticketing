@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   ShieldCheck,
@@ -382,7 +383,15 @@ export default function CheckoutPage() {
                 className="mt-0.5 rounded text-primary focus:ring-primary h-5 w-5 flex-shrink-0 cursor-pointer"
               />
               <label htmlFor="terms" className="cursor-pointer select-none leading-relaxed">
-                I confirm the passenger names match their travel documents. I agree to the flight carriage conditions, airline fare rules, and cancellation policies.
+                I confirm the passenger names match their travel documents. I agree to the{" "}
+                <Link href="/terms-of-carriage" target="_blank" className="underline hover:text-primary font-medium">
+                  Terms of Carriage
+                </Link>
+                , international airline fare rules, and{" "}
+                <Link href="/refund-policy" target="_blank" className="underline hover:text-primary font-medium">
+                  Refund Policies
+                </Link>
+                .
               </label>
             </div>
 
