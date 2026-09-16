@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SupplierTicketService } from "@/lib/pricing/supplier-ticket-service";
+import { parseRequestBody } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const scope = body.scope || "ALL_UNSOLD"; // "ALL_UNSOLD" | "SELECTED" | "SINGLE"
+    const body = await parseRequestBody<{ scope?: string; ticketIds?: string[]; ticketId?: string }>(req, {});
+    const scope = (body.scope || "ALL_UNSOLD") as "ALL_UNSOLD" | "SELECTED" | "SINGLE";
     const ticketIds = Array.isArray(body.ticketIds) ? body.ticketIds : body.ticketId ? [body.ticketId] : [];
 
     const result = await SupplierTicketService.recalculateTickets({

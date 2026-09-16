@@ -70,3 +70,55 @@ export function formatFlightDate(isoString: string): string {
     return isoString;
   }
 }
+
+/**
+ * Safely parse a fetch response as JSON, preventing SyntaxError: "Unexpected end of JSON input"
+ * when the server responds with empty body, 204, or non-JSON content.
+ */
+export async function parseResponseJson<T = any>(
+  res: Response
+): Promise<{ data: T | null; error: string | null }> {
+  try {
+    const text = await res.text();
+    if (!text || !text.trim()) {
+      return {
+        data: null,
+        error: res.ok ? null : `Server returned empty response (HTTP ${res.status})`,
+      };
+    }
+    const data = JSON.parse(text) as T;
+    return { data, error: null };
+  } catch {
+    return {
+      data: null,
+      error: `Invalid response format from server (HTTP ${res.status})`,
+    };
+  }
+}
+
+/**
+ * Safely parse incoming NextRequest JSON body without throwing "Unexpected end of JSON input"
+ */
+export async function parseRequestBody<T = any>(req: Request | any, defaultValue: T = {} as T): Promise<T> {
+  try {
+    const text = await req.text();
+    if (!text || !text.trim()) return defaultValue;
+    return JSON.parse(text) as T;
+  } catch {
+    return defaultValue;
+  }
+}
+
+/**
+ * Sanitize error messages so that cryptic technical errors like "Unexpected end of JSON input"
+ * are translated into clear, actionable, and user-friendly messages.
+ */
+export function sanitizeErrorMessage(err: any, fallback = "An unexpected error occurred"): string {
+  const msg = typeof err === "string" ? err : err?.message;
+  if (!msg) return fallback;
+  if (msg.includes("Unexpected end of JSON input") || msg.includes("is not valid JSON") || msg.includes("JSON.parse")) {
+    return "The server returned an empty or invalid response. Please verify connectivity or try again.";
+  }
+  return msg;
+}
+

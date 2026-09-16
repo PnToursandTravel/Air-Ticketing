@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { AuthService } from "@/lib/auth/auth-service";
 import { Prisma } from "@prisma/client";
+import { parseRequestBody } from "@/lib/utils";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -11,7 +12,7 @@ const LoginSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await parseRequestBody<any>(req, {});
     const validated = LoginSchema.parse(body);
 
     const clientIp = req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";

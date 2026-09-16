@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { parseResponseJson, sanitizeErrorMessage } from "@/lib/utils";
 
 export default function AgentLoginPage() {
   const router = useRouter();
@@ -19,12 +20,13 @@ export default function AgentLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Registration form state
+  // Register form state
   const [regAgencyName, setRegAgencyName] = useState("");
-  const [regIata, setRegIata] = useState("");
-  const [regLicense, setRegLicense] = useState("");
+  const [regContactName, setRegContactName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
+  const [regIata, setRegIata] = useState("");
+  const [regLicense, setRegLicense] = useState("");
   const [regSuccess, setRegSuccess] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,14 +41,14 @@ export default function AgentLoginPage() {
         body: JSON.stringify({ email, password, roleCategory: "AGENT" }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Invalid agency login credentials");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || parseError || "Invalid agency login credentials");
       }
 
       router.push("/agent");
     } catch (err: any) {
-      setError(err?.message || "Failed to log in to agency portal");
+      setError(sanitizeErrorMessage(err, "Failed to log in to agency portal"));
     } finally {
       setLoading(false);
     }

@@ -22,6 +22,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { TextInput } from "@/components/ui/TextInput";
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
+import { parseResponseJson, sanitizeErrorMessage } from "@/lib/utils";
 import Link from "next/link";
 
 export default function MarkupSettingsPage() {
@@ -36,23 +37,23 @@ export default function MarkupSettingsPage() {
   const [isAutomaticEnabled, setIsAutomaticEnabled] = useState<boolean>(true);
   const [sampleCalc, setSampleCalc] = useState<any>(null);
 
-  // Live interactive calculator input for admin
+  // Live Playground calculation state
   const [testSupplierPrice, setTestSupplierPrice] = useState<number>(500);
 
   useEffect(() => {
     async function loadData() {
       try {
         const authRes = await fetch("/api/v1/auth/me");
-        const authData = await authRes.json();
-        if (!authRes.ok || !authData.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
+        const { data: authData } = await parseResponseJson(authRes);
+        if (!authRes.ok || !authData?.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
           router.push("/admin/login");
           return;
         }
         setCurrentUser(authData.user);
 
         const res = await fetch("/api/v1/admin/markup/settings");
-        const data = await res.json();
-        if (data.success && data.data) {
+        const { data } = await parseResponseJson(res);
+        if (data?.success && data.data) {
           setDefaultMarkupPercent(data.data.defaultMarkupPercent);
           setIsAutomaticEnabled(data.data.isAutomaticEnabled);
           setSampleCalc(data.data.sampleCalculation);
@@ -81,9 +82,9 @@ export default function MarkupSettingsPage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to save markup settings");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || parseError || "Failed to save markup settings");
       }
 
       setFeedback({
@@ -94,7 +95,7 @@ export default function MarkupSettingsPage() {
     } catch (err: any) {
       setFeedback({
         type: "error",
-        message: err?.message || "An error occurred while saving.",
+        message: sanitizeErrorMessage(err, "An error occurred while saving."),
       });
     } finally {
       setSaving(false);
@@ -117,9 +118,9 @@ export default function MarkupSettingsPage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to update automatic markup status");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || parseError || "Failed to update automatic markup status");
       }
 
       setFeedback({
@@ -131,7 +132,7 @@ export default function MarkupSettingsPage() {
       setIsAutomaticEnabled(!nextState); // Revert
       setFeedback({
         type: "error",
-        message: err?.message || "An error occurred while toggling markup.",
+        message: sanitizeErrorMessage(err, "An error occurred while toggling markup."),
       });
     } finally {
       setSaving(false);

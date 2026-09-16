@@ -18,13 +18,21 @@ export async function POST(req: NextRequest) {
       }
       csvText = await file.text();
     } else {
-      const body = await req.json();
-      csvText = body.csvText || "";
+      const rawText = await req.text().catch(() => "");
+      if (rawText.trim()) {
+        try {
+          const body = JSON.parse(rawText);
+          csvText = body.csvText || rawText;
+        } catch {
+          // If not valid JSON, treat raw text directly as CSV
+          csvText = rawText;
+        }
+      }
     }
 
     if (!csvText.trim()) {
       return NextResponse.json(
-        { success: false, error: "Uploaded CSV is empty." },
+        { success: false, error: "Uploaded CSV content is empty." },
         { status: 400 }
       );
     }

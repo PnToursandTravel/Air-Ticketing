@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
-import { formatFlightDate, formatMoney } from "@/lib/utils";
+import { formatFlightDate, formatMoney, parseResponseJson, sanitizeErrorMessage } from "@/lib/utils";
 import Link from "next/link";
 
 interface SupplierTicketRecord {
@@ -133,8 +133,8 @@ export default function SupplierTicketResultsPage() {
       if (selectedStatus !== "ALL") params.set("status", selectedStatus);
 
       const res = await fetch(`/api/v1/admin/markup/tickets?${params.toString()}`);
-      const data = await res.json();
-      if (data.success) {
+      const { data } = await parseResponseJson(res);
+      if (data?.success && data.data) {
         setTickets(data.data.tickets);
         setSummary(data.data.summary);
         setPagination(data.data.pagination);
@@ -150,8 +150,8 @@ export default function SupplierTicketResultsPage() {
     async function init() {
       try {
         const authRes = await fetch("/api/v1/auth/me");
-        const authData = await authRes.json();
-        if (!authRes.ok || !authData.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
+        const { data: authData } = await parseResponseJson(authRes);
+        if (!authRes.ok || !authData?.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
           router.push("/admin/login");
           return;
         }
@@ -159,8 +159,8 @@ export default function SupplierTicketResultsPage() {
 
         // Load markup settings
         const setRes = await fetch("/api/v1/admin/markup/settings");
-        const setData = await setRes.json();
-        if (setData.success) {
+        const { data: setData } = await parseResponseJson(setRes);
+        if (setData?.success && setData.data) {
           setMarkupSettings({
             defaultMarkupPercent: setData.data.defaultMarkupPercent,
             isAutomaticEnabled: setData.data.isAutomaticEnabled,
@@ -192,10 +192,10 @@ export default function SupplierTicketResultsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope: "SINGLE", ticketIds: [ticketId] }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error);
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to recalculate ticket");
 
-      setFeedback({ type: "success", message: data.message });
+      setFeedback({ type: "success", message: data.message || "Ticket recalculated successfully." });
       setTimeout(() => setFeedback(null), 4000);
       await loadTickets(pagination.page);
 
@@ -204,7 +204,7 @@ export default function SupplierTicketResultsPage() {
         if (updated) setActiveTicketDetail(updated);
       }
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "Failed to recalculate ticket" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "Failed to recalculate ticket") });
     } finally {
       setIsRecalculating(false);
     }
@@ -220,15 +220,15 @@ export default function SupplierTicketResultsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope: "SELECTED", ticketIds: selectedTickets }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error);
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to recalculate selected");
 
-      setFeedback({ type: "success", message: data.message });
+      setFeedback({ type: "success", message: data.message || "Selected tickets recalculated successfully." });
       setTimeout(() => setFeedback(null), 5000);
       setSelectedTickets([]);
       await loadTickets(pagination.page);
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "Failed to recalculate selected" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "Failed to recalculate selected") });
     } finally {
       setIsRecalculating(false);
     }
@@ -244,14 +244,14 @@ export default function SupplierTicketResultsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope: "ALL_UNSOLD" }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error);
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to recalculate all unsold tickets");
 
-      setFeedback({ type: "success", message: data.message });
+      setFeedback({ type: "success", message: data.message || "All unsold tickets recalculated successfully." });
       setTimeout(() => setFeedback(null), 5000);
       await loadTickets(1);
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "Failed to recalculate all unsold tickets" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "Failed to recalculate all unsold tickets") });
     } finally {
       setIsRecalculating(false);
     }
@@ -273,11 +273,11 @@ export default function SupplierTicketResultsPage() {
         body: formData,
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to parse CSV");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to parse CSV");
       setCSVPreview(data.data);
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "CSV error" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "CSV error") });
     } finally {
       setCSVUploading(false);
     }
@@ -310,17 +310,17 @@ export default function SupplierTicketResultsPage() {
         body: JSON.stringify({ tickets: ticketsToSave, importedVia: "CSV" }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error);
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to import CSV");
 
-      setFeedback({ type: "success", message: data.message });
+      setFeedback({ type: "success", message: data.message || "CSV tickets imported successfully." });
       setTimeout(() => setFeedback(null), 5000);
       setShowCSVModal(false);
       setCSVPreview(null);
       setCSVFile(null);
       await loadTickets(1);
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "Failed to import CSV" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "Failed to import CSV") });
     } finally {
       setCSVUploading(false);
     }
@@ -381,15 +381,15 @@ export default function SupplierTicketResultsPage() {
         body: JSON.stringify({ tickets: ticketsToSave, importedVia: "MANUAL" }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error);
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) throw new Error(data?.error || parseError || "Failed to save manual spreadsheet tickets");
 
-      setFeedback({ type: "success", message: data.message });
+      setFeedback({ type: "success", message: data.message || "Manual spreadsheet tickets saved successfully." });
       setTimeout(() => setFeedback(null), 5000);
       setShowSpreadsheetModal(false);
       await loadTickets(1);
     } catch (err: any) {
-      setFeedback({ type: "error", message: err?.message || "Failed to save manual spreadsheet tickets" });
+      setFeedback({ type: "error", message: sanitizeErrorMessage(err, "Failed to save manual spreadsheet tickets") });
     } finally {
       setManualSaving(false);
     }

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { parseResponseJson, sanitizeErrorMessage } from "@/lib/utils";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -28,14 +29,14 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password, roleCategory: "ADMIN" }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Authentication failed or insufficient privilege");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || parseError || "Authentication failed or insufficient privilege");
       }
 
       router.push("/admin");
     } catch (err: any) {
-      setError(err?.message || "Failed to authenticate administrator");
+      setError(sanitizeErrorMessage(err, "Failed to authenticate administrator"));
     } finally {
       setLoading(false);
     }

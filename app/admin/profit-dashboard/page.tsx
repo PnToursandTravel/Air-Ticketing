@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
-import { formatMoney, formatFlightDate } from "@/lib/utils";
+import { formatMoney, formatFlightDate, parseResponseJson } from "@/lib/utils";
 import Link from "next/link";
 
 export default function ProfitDashboardPage() {
@@ -29,7 +29,12 @@ export default function ProfitDashboardPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Profit Metrics Data
+  // Filter and aggregation states
+  const [dateRange, setDateRange] = useState<string>("30");
+  const [selectedAirline, setSelectedAirline] = useState<string>("ALL");
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
+  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+
   const [summary, setSummary] = useState<any>({
     totalTicketsProcessed: 0,
     totalSupplierCostMinor: 0,
@@ -40,19 +45,13 @@ export default function ProfitDashboardPage() {
   });
   const [tickets, setTickets] = useState<any[]>([]);
 
-  // Filters
-  const [dateRange, setDateRange] = useState<string>("ALL");
-  const [selectedAirline, setSelectedAirline] = useState<string>("ALL");
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("ALL");
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
         const authRes = await fetch("/api/v1/auth/me");
-        const authData = await authRes.json();
-        if (!authRes.ok || !authData.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
+        const { data: authData } = await parseResponseJson(authRes);
+        if (!authRes.ok || !authData?.success || !authData.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(authData.user.role)) {
           router.push("/admin/login");
           return;
         }
@@ -65,8 +64,8 @@ export default function ProfitDashboardPage() {
         if (selectedStatus !== "ALL") params.set("status", selectedStatus);
 
         const res = await fetch(`/api/v1/admin/markup/tickets?${params.toString()}`);
-        const data = await res.json();
-        if (data.success) {
+        const { data } = await parseResponseJson(res);
+        if (data?.success && data.data) {
           setSummary(data.data.summary);
           setTickets(data.data.tickets);
         }

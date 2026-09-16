@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SupplierTicketService } from "@/lib/pricing/supplier-ticket-service";
+import { parseRequestBody } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await parseRequestBody<any>(req, {});
     const tickets = body.tickets;
     const importedVia = body.importedVia || "MANUAL";
 

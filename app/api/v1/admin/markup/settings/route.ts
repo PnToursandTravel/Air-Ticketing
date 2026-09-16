@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SupplierTicketService } from "@/lib/pricing/supplier-ticket-service";
 import { calculateTicketMarkup } from "@/lib/pricing/bulk-markup-engine";
+import { parseRequestBody } from "@/lib/utils";
 
 export async function GET() {
   try {
@@ -43,7 +44,7 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await parseRequestBody<any>(req, {});
 
     if (body.defaultMarkupPercent === undefined || isNaN(Number(body.defaultMarkupPercent))) {
       return NextResponse.json(

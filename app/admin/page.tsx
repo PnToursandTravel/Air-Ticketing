@@ -30,7 +30,7 @@ import { TextInput } from "@/components/ui/TextInput";
 import { BookingService } from "@/lib/bookings/booking-service";
 import { DEFAULT_PRICING_RULES } from "@/lib/pricing/engine";
 import { BookingRecord, PricingRule } from "@/types";
-import { formatFlightDate, formatMoney } from "@/lib/utils";
+import { formatFlightDate, formatMoney, parseResponseJson, sanitizeErrorMessage } from "@/lib/utils";
 import Link from "next/link";
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
 
@@ -64,8 +64,8 @@ export default function AdminDashboardPage() {
     async function checkAuthAndLoadData() {
       try {
         const res = await fetch("/api/v1/auth/me");
-        const data = await res.json();
-        if (!res.ok || !data.success || !data.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(data.user.role)) {
+        const { data } = await parseResponseJson(res);
+        if (!res.ok || !data?.success || !data.user || !["ADMIN", "SUPER_ADMIN", "OPERATIONS"].includes(data.user.role)) {
           router.push("/admin/login");
           return;
         }
@@ -73,8 +73,8 @@ export default function AdminDashboardPage() {
 
         // Load database settings
         const settingsRes = await fetch("/api/v1/admin/settings");
-        const settingsData = await settingsRes.json();
-        if (settingsData.success) {
+        const { data: settingsData } = await parseResponseJson(settingsRes);
+        if (settingsData?.success && settingsData.data) {
           setConfigs(settingsData.data);
         }
       } catch {
@@ -87,7 +87,11 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   const handleLogout = async () => {
-    await fetch("/api/v1/auth/logout", { method: "POST" });
+    try {
+      await fetch("/api/v1/auth/logout", { method: "POST" });
+    } catch {
+      // safe fallback
+    }
     router.push("/admin/login");
   };
 
@@ -99,7 +103,7 @@ export default function AdminDashboardPage() {
       setFeedback(`Ticketing re-issued successfully for #${reference}. PNR: ${updated.pnr}`);
       setTimeout(() => setFeedback(""), 5000);
     } catch (err: any) {
-      setFeedback(`Retry failed: ${err?.message}`);
+      setFeedback(sanitizeErrorMessage(err, "Retry failed"));
     } finally {
       setRetryingRef(null);
     }
@@ -126,15 +130,15 @@ export default function AdminDashboardPage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to update configuration");
+      const { data, error: parseError } = await parseResponseJson(res);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || parseError || "Failed to update configuration");
       }
 
       // Refresh configs
       const settingsRes = await fetch("/api/v1/admin/settings");
-      const settingsData = await settingsRes.json();
-      if (settingsData.success) {
+      const { data: settingsData } = await parseResponseJson(settingsRes);
+      if (settingsData?.success && settingsData.data) {
         setConfigs(settingsData.data);
       }
 
@@ -142,7 +146,7 @@ export default function AdminDashboardPage() {
       setTimeout(() => setFeedback(""), 4000);
       setEditingConfig(null);
     } catch (err: any) {
-      setFeedback(err?.message || "Error updating setting");
+      setFeedback(sanitizeErrorMessage(err, "Error updating setting"));
     } finally {
       setUpdatingConfig(false);
     }
