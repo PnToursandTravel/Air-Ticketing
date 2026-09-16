@@ -201,10 +201,11 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
 
         {/* Right Action & Mobile Toggle */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <Link href="/account/trips" className="hidden sm:inline-block">
-            <Button variant="primary" size="sm" className="flex items-center space-x-1.5 min-h-[40px]">
+          <Link href="/account/trips" className="inline-flex items-center">
+            <Button variant="primary" size="sm" className="flex items-center space-x-1.5 min-h-[38px] sm:min-h-[40px] px-2.5 sm:px-3 text-xs sm:text-sm font-semibold">
               <Luggage className="w-3.5 h-3.5" />
-              <span>Manage Booking</span>
+              <span className="hidden xs:inline">Manage Booking</span>
+              <span className="xs:hidden">Manage</span>
             </Button>
           </Link>
 
@@ -214,13 +215,13 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation menu"
-            className={`md:hidden w-11 h-11 rounded-md flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+            className={`md:hidden w-10 h-10 sm:w-11 sm:h-11 rounded-md flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
               darkHero
                 ? "text-on-dark hover:bg-white/10 active:bg-white/20"
                 : "text-ink hover:bg-surface-soft active:bg-hairline"
             }`}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
         </div>
       </div>
@@ -229,6 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-hairline bg-canvas text-ink animate-in slide-in-from-top-2 duration-200 shadow-2xl">
           <nav className="p-4 space-y-3" aria-label="Mobile Navigation">
+            {/* 1. Flight Search */}
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
@@ -242,6 +244,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               <span>Flight Search</span>
             </Link>
 
+            {/* 2. My Trips & E-Tickets */}
             <Link
               href="/account/trips"
               onClick={() => setMobileMenuOpen(false)}
@@ -255,20 +258,37 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               <span>My Trips & E-Tickets</span>
             </Link>
 
+            {/* 3. Tours & Holiday Packages */}
             <a
               href="https://pntoursandtravel.com/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between p-3 rounded-lg text-sm font-medium hover:bg-surface-soft text-ink transition-colors min-h-[48px]"
+              className="flex items-center justify-between p-3 rounded-lg text-sm font-medium hover:bg-surface-soft text-ink transition-colors min-h-[48px] border border-hairline/60"
             >
               <div className="flex items-center space-x-3">
                 <Compass className="w-4 h-4 text-primary" />
-                <span>Tours & Holiday Packages</span>
+                <span className="font-semibold text-primary">Tours & Holiday Packages</span>
               </div>
               <ExternalLink className="w-4 h-4 text-muted" />
             </a>
 
+            {/* 4. Manage Booking & Check-in */}
+            <Link
+              href="/account/trips"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between p-3 rounded-lg text-sm font-semibold bg-primary text-on-primary hover:bg-primary/90 transition-all min-h-[48px] shadow-sm"
+            >
+              <div className="flex items-center space-x-3">
+                <Luggage className="w-4 h-4" />
+                <span>Manage Booking & Check-in</span>
+              </div>
+              <span className="text-[10px] bg-black/15 px-2 py-0.5 rounded font-mono uppercase tracking-wider">
+                Instant Access
+              </span>
+            </Link>
+
+            {/* 5. 24/7 Ticketing Hotline */}
             <a
               href="tel:+256785360444"
               className="flex items-center space-x-3 p-3 rounded-lg text-sm font-medium hover:bg-surface-soft text-ink transition-colors min-h-[48px]"
@@ -304,33 +324,6 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2 space-y-2">
-              <a
-                href="https://pntoursandtravel.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Button
-                  variant="secondary-light"
-                  size="md"
-                  className="w-full flex items-center justify-center space-x-2 min-h-[44px] border border-hairline font-semibold"
-                >
-                  <Globe className="w-4 h-4 text-primary" />
-                  <span>Visit pntoursandtravel.com</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted" />
-                </Button>
-              </a>
-
-              <Link href="/account/trips" onClick={() => setMobileMenuOpen(false)} className="block">
-                <Button variant="primary" size="md" className="w-full flex items-center justify-center space-x-2 min-h-[48px]">
-                  <Luggage className="w-4 h-4" />
-                  <span>Manage Booking & Check-in</span>
-                </Button>
-              </Link>
             </div>
           </nav>
         </div>
