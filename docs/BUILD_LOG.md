@@ -141,4 +141,27 @@ All engineering milestones, architectural changes, testing results, and next act
   - Next.js Build: 25 static and dynamic pages generated.
   - Live Endpoints: Health check and flight search returning live data.
 
+---
+
+## Milestone 7: Production Deployment Fixes, Dependency Resolution & Live Verification
+- **Date**: 2026-09-16
+- **Status**: Completed
+- **Problem Statement**:
+  - Cloud deployment builds on Vercel were failing due to:
+    1. Undeclared dependency `@supabase/ssr` (used in `lib/supabase/client.ts` and `lib/supabase/server.ts` but omitted from `package.json`), causing clean CI builds to fail during module resolution.
+    2. Overriding `buildCommand` in `vercel.json` with `prisma migrate deploy`, which blocked frontend compilation on Vercel containers lacking direct migration socket access, despite Supabase schema being 100% migrated and up to date.
+    3. Missing `bootstrap:super-admin` script binding in `package.json`.
+- **Completed Work**:
+  - Added `@supabase/ssr` to `dependencies` in `package.json` and synchronized `package-lock.json`.
+  - Added `tsx` dependency and configured `bootstrap:super-admin` in `package.json` scripts.
+  - Corrected `vercel.json` buildCommand to `prisma generate && next build`.
+  - Validated local clean build (`npm run typecheck`, `npm test` 31/31 passing, `npm run build` 25 routes compiled).
+  - Pushed commit `fbfc8f2` to GitHub `main` branch.
+  - Verified automated Vercel CI/CD execution: status `SUCCESS` (`Deployment has completed`).
+  - Tested live production endpoints on `https://air-ticketing.vercel.app`:
+    - `/api/v1/health` returned `200 OK` (`status: HEALTHY`, `database: CONNECTED`, timestamp current).
+    - `/api/v1/flights/search` returned `200 OK` (8 live flight offers with minor-unit pricing and tax breakdowns).
+    - Homepage (`/`), `/admin/login`, `/agent/login`, `/account/trips` all returning `200 OK` with full institutional design tokens.
+
+
 
