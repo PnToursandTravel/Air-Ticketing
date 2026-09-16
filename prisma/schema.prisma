@@ -667,3 +667,46 @@ model PricingRule {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }
+
+model MarkupSetting {
+  id                   String   @id @default(uuid())
+  defaultMarkupPercent Float    @default(10.0)
+  isAutomaticEnabled   Boolean  @default(true)
+  updatedByUserId      String?
+  updatedByEmail       String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model SupplierTicket {
+  id                   String   @id @default(uuid())
+  supplierReference    String   // Supplier quote or ticket reference
+  supplierName         String   @default("IATA Direct Connect")
+  airline              String   // Airline name e.g. "Emirates", "Uganda Airlines"
+  airlineCode          String?  // IATA code e.g. "EK", "UR"
+  origin               String   // Origin airport e.g. "EBB"
+  destination          String   // Destination airport e.g. "DXB"
+  travelDate           DateTime // Departure date
+  passengerType        String   @default("ADULT") // "ADULT", "CHILD", "INFANT"
+  cabinClass           String   @default("ECONOMY") // "ECONOMY", "BUSINESS", "FIRST"
+  currency             String   @default("USD")
+  supplierPriceMinor   Int      // Original supplier price in minor units (e.g. 50000 = $500.00)
+  markupPercentage     Float    // Markup applied e.g. 10.0
+  profitMinor          Int      // Profit in minor units e.g. 5000 = $50.00
+  customerPriceMinor   Int      // Customer final price in minor units e.g. 55000 = $550.00
+  pricingStatus        String   @default("Calculated") // "Calculated", "Updated", "Price Changed", "Expired", "Booked", "Paid", "Ticketed", "Cancelled", "Refunded", "Error"
+  markupRuleUsed       String   @default("Default Markup")
+  errorMessage         String?
+  isSold               Boolean  @default(false)
+  bookingReference     String?
+  importedVia          String   @default("API") // "API", "CSV", "MANUAL"
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([supplierReference])
+  @@index([airline])
+  @@index([pricingStatus])
+  @@index([isSold])
+  @@index([createdAt])
+}
+

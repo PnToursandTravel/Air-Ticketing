@@ -32,6 +32,7 @@ import { DEFAULT_PRICING_RULES } from "@/lib/pricing/engine";
 import { BookingRecord, PricingRule } from "@/types";
 import { formatFlightDate, formatMoney } from "@/lib/utils";
 import Link from "next/link";
+import { AdminNavBar } from "@/components/admin/AdminNavBar";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -162,7 +163,7 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen flex flex-col bg-canvas">
       <Navbar />
 
-      <main className="flex-1 py-12 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-12">
+      <main className="flex-1 py-12 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hairline pb-6">
           <div className="space-y-1">
@@ -192,6 +193,9 @@ export default function AdminDashboardPage() {
             </Button>
           </div>
         </div>
+
+        {/* Shared Admin Navigation Tab Bar */}
+        <AdminNavBar />
 
         {feedback && (
           <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-semibold flex items-center space-x-2">
