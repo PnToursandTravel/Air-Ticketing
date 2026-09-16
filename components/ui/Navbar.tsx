@@ -174,17 +174,6 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
           >
             Flight Search
           </Link>
-          <a
-            href="https://pntoursandtravel.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`transition-colors hover:text-primary py-2 flex items-center space-x-1.5 group ${
-              darkHero ? "text-on-dark/80" : "text-body"
-            }`}
-          >
-            <span>Tours & Holiday Packages</span>
-            <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-primary transition-colors opacity-70" />
-          </a>
           <Link
             href="/account/trips"
             className={`transition-colors hover:text-primary py-2 ${
@@ -198,13 +187,15 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
             My Trips & E-Tickets
           </Link>
           <a
-            href="tel:+256785360444"
-            className={`transition-colors hover:text-primary flex items-center space-x-1.5 py-2 ${
+            href="https://pntoursandtravel.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`transition-colors hover:text-primary py-2 flex items-center space-x-1.5 group ${
               darkHero ? "text-on-dark/80" : "text-body"
             }`}
           >
-            <Phone className="w-3.5 h-3.5 text-primary" />
-            <span>24/7 Ticketing Desk</span>
+            <span>Tours & Holiday Packages</span>
+            <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-primary transition-colors opacity-70" />
           </a>
         </nav>
 
@@ -251,6 +242,19 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               <span>Flight Search</span>
             </Link>
 
+            <Link
+              href="/account/trips"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 p-3 rounded-lg text-sm font-medium transition-colors min-h-[48px] ${
+                linkActive("/account/trips")
+                  ? "bg-primary/10 text-primary font-bold"
+                  : "hover:bg-surface-soft text-ink"
+              }`}
+            >
+              <Luggage className="w-4 h-4 text-primary" />
+              <span>My Trips & E-Tickets</span>
+            </Link>
+
             <a
               href="https://pntoursandtravel.com/"
               target="_blank"
@@ -264,19 +268,6 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               </div>
               <ExternalLink className="w-4 h-4 text-muted" />
             </a>
-
-            <Link
-              href="/account/trips"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 p-3 rounded-lg text-sm font-medium transition-colors min-h-[48px] ${
-                linkActive("/account/trips")
-                  ? "bg-primary/10 text-primary font-bold"
-                  : "hover:bg-surface-soft text-ink"
-              }`}
-            >
-              <Luggage className="w-4 h-4 text-primary" />
-              <span>My Trips & E-Tickets</span>
-            </Link>
 
             <a
               href="tel:+256785360444"
