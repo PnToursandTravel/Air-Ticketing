@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Globe, ChevronDown, Luggage, Plane, Menu, X, ExternalLink } from "lucide-react";
+import { Phone, Globe, ChevronDown, Luggage, Plane, Menu, X, ExternalLink, Compass } from "lucide-react";
 import { Button } from "./Button";
 import { Currency } from "@/types";
 import { useCurrency } from "@/lib/context/CurrencyContext";
@@ -43,53 +43,54 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
   const navClasses = "bg-canvas text-ink border-b border-hairline";
 
   const linkActive = (href: string) => {
-    if (href === "/" && pathname === "/") return true;
-    if (href !== "/" && pathname.startsWith(href)) return true;
-    return false;
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
   };
 
   return (
-    <header className={`sticky top-0 z-50 transition-colors duration-200 ${navClasses}`}>
-      {/* Top micro-bar: 24/7 hotline and multi-currency */}
-      <div className="text-xs py-1.5 px-3 sm:px-8 border-b border-hairline bg-surface-soft text-body">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-2 sm:space-x-4 truncate">
-            <span className="flex items-center space-x-1.5 font-medium truncate">
-              <Phone className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-              <span className="hidden xs:inline">24/7 Desk:</span>
-              <a
-                href="tel:+256785360444"
-                className="text-primary hover:underline font-mono font-bold text-xs"
-                aria-label="Call 24/7 Ticketing Desk at +256 785360444"
-              >
-                +256 785360444
-              </a>
+    <header className={`sticky top-0 z-50 transition-colors duration-200 shadow-sm ${navClasses}`}>
+      {/* Top utility bar */}
+      <div className="bg-surface-soft/80 border-b border-hairline py-1.5 px-4 sm:px-6 lg:px-8 text-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-4 text-muted">
+            <span className="flex items-center space-x-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-medium text-ink">IATA Accredited</span>
             </span>
-            <span className="hidden lg:inline text-hairline">|</span>
-            <span className="hidden lg:inline text-muted font-normal text-[11px]">
-              Direct Global Airline Content • Instant PNR Guarantee
-            </span>
+            <span className="hidden sm:inline text-hairline">|</span>
+            <span className="hidden sm:inline">24/7 Ticketing Desk</span>
+            <span className="hidden md:inline text-hairline">|</span>
+            <a
+              href="tel:+256785360444"
+              className="hidden md:inline-flex items-center space-x-1 text-primary hover:underline font-mono font-bold"
+            >
+              <Phone className="w-3 h-3" />
+              <span>+256 785360444</span>
+            </a>
           </div>
 
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          <div className="flex items-center space-x-4">
             {/* Currency selector */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setCurrencyOpen(!currencyOpen)}
                 aria-expanded={currencyOpen}
-                aria-label="Select currency"
-                className="flex items-center space-x-1.5 font-mono text-xs px-2.5 py-1 rounded-pill border border-hairline text-ink bg-surface-soft hover:bg-surface-card transition-colors min-h-[32px]"
+                aria-label="Select display currency"
+                className="flex items-center space-x-1 font-mono font-bold hover:text-primary transition-colors py-1 px-2 rounded hover:bg-surface text-ink text-xs min-h-[32px]"
               >
-                <Globe className="w-3 h-3 text-primary flex-shrink-0" />
-                <span className="font-bold">{currency}</span>
-                <ChevronDown className={`w-3 h-3 opacity-60 transition-transform ${currencyOpen ? "rotate-180" : ""}`} />
+                <Globe className="w-3.5 h-3.5 text-muted" />
+                <span>{currency}</span>
+                <ChevronDown className={`w-3 h-3 text-muted transition-transform ${currencyOpen ? "rotate-180" : ""}`} />
               </button>
 
               {currencyOpen && (
-                <div className="absolute right-0 mt-1 w-36 bg-surface-card text-ink rounded-md border border-hairline shadow-2xl py-1 z-50 animate-in fade-in">
-                  <div className="px-3 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-hairline">
-                    Select Currency
+                <div
+                  className="absolute right-0 mt-1 w-28 rounded-lg shadow-xl border border-hairline py-1 z-50 bg-canvas text-ink animate-in fade-in zoom-in-95 duration-100"
+                  role="menu"
+                >
+                  <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted border-b border-hairline">
+                    Currency
                   </div>
                   {currencies.map((c) => (
                     <button
@@ -99,34 +100,53 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
                         setCurrency(c);
                         setCurrencyOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs hover:bg-surface-soft font-mono flex items-center justify-between min-h-[36px] ${
-                        currency === c ? "text-primary font-bold bg-surface-soft" : "text-ink"
+                      className={`w-full text-left px-3 py-1.5 text-xs font-mono font-bold hover:bg-surface-soft flex items-center justify-between ${
+                        currency === c ? "text-primary bg-primary/5" : "text-ink"
                       }`}
+                      role="menuitem"
                     >
                       <span>{c}</span>
-                      {currency === c && <span className="text-primary text-[10px]">✓</span>}
+                      {currency === c && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
+
+            <span className="text-hairline">|</span>
+
+            <Link
+              href="/account/trips"
+              className="hover:text-primary transition-colors py-1 text-muted hover:text-ink font-medium min-h-[32px] flex items-center"
+            >
+              My Bookings
+            </Link>
+
+            <span className="text-hairline">|</span>
+
+            <Link
+              href="/admin/login"
+              className="hover:text-primary transition-colors py-1 text-muted hover:text-ink font-medium min-h-[32px] flex items-center"
+            >
+              Agent Login
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Main navigation: Customer Travel Only */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-        {/* Brand logo & title */}
-        <Link href="/" className="flex items-center space-x-2.5 sm:space-x-3 group min-w-0" aria-label="PN Tours & Travel Home">
+      {/* Main navigation bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+        {/* Brand Logo & Name */}
+        <Link href="/" className="flex items-center space-x-3 group min-w-0" aria-label="PN Tours & Travel Air Ticketing Home">
           {!logoError ? (
             <img
               src={brandLogoUrl}
-              alt="PN Tours and Travel Logo"
+              alt="PN Tours & Travel Logo"
+              className="h-10 sm:h-12 w-auto max-w-[140px] sm:max-w-[170px] object-contain flex-shrink-0 transition-transform group-hover:scale-[1.02]"
               onError={() => setLogoError(true)}
-              className="h-9 sm:h-10 w-auto object-contain rounded-sm flex-shrink-0"
             />
           ) : (
-            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20 group-hover:scale-105 transition-transform flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
               <Plane className="w-5 h-5 text-primary" />
             </div>
           )}
@@ -141,7 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
         </Link>
 
         {/* Center menu links - Desktop (>= md) */}
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-medium" aria-label="Main Navigation">
+        <nav className="hidden md:flex items-center space-x-7 text-sm font-medium" aria-label="Main Navigation">
           <Link
             href="/"
             className={`transition-colors hover:text-primary py-2 ${
@@ -154,6 +174,17 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
           >
             Flight Search
           </Link>
+          <a
+            href="https://pntoursandtravel.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`transition-colors hover:text-primary py-2 flex items-center space-x-1.5 group ${
+              darkHero ? "text-on-dark/80" : "text-body"
+            }`}
+          >
+            <span>Tours & Holiday Packages</span>
+            <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-primary transition-colors opacity-70" />
+          </a>
           <Link
             href="/account/trips"
             className={`transition-colors hover:text-primary py-2 ${
@@ -179,24 +210,6 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
 
         {/* Right Action & Mobile Toggle */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <a
-            href="https://pntoursandtravel.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center"
-            title="Visit Official PN Tours and Travel Website"
-          >
-            <Button
-              variant="secondary-light"
-              size="sm"
-              className="flex items-center space-x-1.5 min-h-[40px] text-xs font-semibold border border-hairline hover:border-primary/50 shadow-sm"
-            >
-              <Globe className="w-3.5 h-3.5 text-primary" />
-              <span>pntoursandtravel.com</span>
-              <ExternalLink className="w-3 h-3 text-muted ml-0.5" />
-            </Button>
-          </a>
-
           <Link href="/account/trips" className="hidden sm:inline-block">
             <Button variant="primary" size="sm" className="flex items-center space-x-1.5 min-h-[40px]">
               <Luggage className="w-3.5 h-3.5" />
@@ -237,6 +250,20 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               <Plane className="w-4 h-4 text-primary" />
               <span>Flight Search</span>
             </Link>
+
+            <a
+              href="https://pntoursandtravel.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between p-3 rounded-lg text-sm font-medium hover:bg-surface-soft text-ink transition-colors min-h-[48px]"
+            >
+              <div className="flex items-center space-x-3">
+                <Compass className="w-4 h-4 text-primary" />
+                <span>Tours & Holiday Packages</span>
+              </div>
+              <ExternalLink className="w-4 h-4 text-muted" />
+            </a>
 
             <Link
               href="/account/trips"
