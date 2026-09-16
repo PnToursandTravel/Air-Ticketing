@@ -12,6 +12,7 @@ import {
   Filter,
   CheckCircle2,
   PhoneCall,
+  Phone,
   ArrowRight,
   TrendingDown,
   Award,
@@ -576,27 +577,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pre-footer CTA Band Dark (#0a0b0d) */}
-      <section className="bg-surface-dark text-on-dark py-24 px-4 sm:px-8 border-t border-white/10 text-center space-y-6">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <Badge variant="pill-dark" className="border-white/20">
+      {/* Pre-footer CTA Band */}
+      <section className="bg-canvas text-ink py-20 sm:py-24 px-4 sm:px-8 border-t border-hairline text-center relative overflow-hidden">
+        {/* Subtle geometric dot pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#07111f12_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />
+
+        <div className="max-w-2xl mx-auto space-y-4 relative z-10">
+          <Badge variant="pill">
             24/7 Flight Support
           </Badge>
-          <h2 className="text-3xl sm:text-5xl font-normal font-sans tracking-tight text-on-dark">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal font-sans tracking-tight text-ink">
             Ready to book your next flight?
           </h2>
-          <p className="text-sm text-on-dark-soft max-w-lg mx-auto">
-            Book online for instant confirmation or call our international ticketing hotline at <span className="font-mono text-on-dark font-bold">+256 785360444</span>.
+          <p className="text-sm sm:text-base text-body max-w-lg mx-auto leading-relaxed">
+            Book online for instant confirmation or call our international ticketing hotline at{" "}
+            <a href="tel:+256785360444" className="font-mono text-ink hover:text-primary font-bold transition-colors">
+              +256 785360444
+            </a>.
           </p>
-          <div className="pt-4 flex justify-center gap-4">
-            <a href="#flight-search">
-              <Button variant="pill-cta">
+          <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto sm:max-w-none">
+            <a href="#flight-search" className="w-full sm:w-auto">
+              <Button variant="pill-cta" className="w-full justify-center min-h-[48px] shadow-md">
                 Search Flights Now
               </Button>
             </a>
-            <a href="tel:+256785360444">
-              <Button variant="outline-on-dark" size="lg">
-                Call +256 785360444
+            <a href="tel:+256785360444" className="w-full sm:w-auto">
+              <Button
+                variant="secondary-light"
+                size="lg"
+                className="w-full justify-center min-h-[48px] border border-hairline hover:border-primary/50 shadow-sm flex items-center space-x-2"
+              >
+                <Phone className="w-4 h-4 text-primary" />
+                <span>Call +256 785360444</span>
               </Button>
             </a>
           </div>

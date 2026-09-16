@@ -16,7 +16,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const variantStyles = {
     pill: "bg-surface-card text-ink border border-hairline",
-    "pill-dark": "bg-surface-card text-on-dark border border-hairline",
+    "pill-dark": "bg-surface-dark text-on-dark border border-white/20",
     "semantic-up": "bg-semantic-up/15 text-semantic-up border border-semantic-up/30",
     "semantic-down": "bg-semantic-down/15 text-semantic-down border border-semantic-down/30",
     primary: "bg-primary/15 text-primary border border-primary/30",
