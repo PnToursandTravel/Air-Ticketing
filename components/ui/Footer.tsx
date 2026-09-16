@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award } from "lucide-react";
+import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award, Globe, ExternalLink } from "lucide-react";
+import { Button } from "./Button";
 
 export const Footer: React.FC = () => {
   const [logoError, setLogoError] = useState(false);
@@ -48,12 +49,43 @@ export const Footer: React.FC = () => {
                 <span>Operations: Kampala, Uganda / Global Network</span>
               </div>
             </div>
+
+            <div className="pt-2">
+              <a
+                href="https://pntoursandtravel.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block"
+                title="Visit Official PN Tours and Travel Website"
+              >
+                <Button
+                  variant="secondary-light"
+                  size="sm"
+                  className="flex items-center space-x-2 border border-hairline hover:border-primary/50 shadow-sm text-xs font-semibold"
+                >
+                  <Globe className="w-3.5 h-3.5 text-primary" />
+                  <span>Visit pntoursandtravel.com</span>
+                  <ExternalLink className="w-3 h-3 text-muted ml-0.5" />
+                </Button>
+              </a>
+            </div>
           </div>
 
           {/* Flights Links */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-ink">Traveler Services</h4>
             <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="https://pntoursandtravel.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors flex items-center space-x-1 font-semibold text-primary"
+                >
+                  <span>Tours & Holiday Packages</span>
+                  <ExternalLink className="w-3 h-3 text-muted" />
+                </a>
+              </li>
               <li>
                 <Link href="/" className="hover:text-primary transition-colors">
                   International Flight Search

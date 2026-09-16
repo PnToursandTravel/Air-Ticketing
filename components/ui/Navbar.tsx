@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Globe, ChevronDown, Luggage, Plane, Menu, X } from "lucide-react";
+import { Phone, Globe, ChevronDown, Luggage, Plane, Menu, X, ExternalLink } from "lucide-react";
 import { Button } from "./Button";
 import { Currency } from "@/types";
 import { useCurrency } from "@/lib/context/CurrencyContext";
@@ -179,6 +179,24 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
 
         {/* Right Action & Mobile Toggle */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          <a
+            href="https://pntoursandtravel.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center"
+            title="Visit Official PN Tours and Travel Website"
+          >
+            <Button
+              variant="secondary-light"
+              size="sm"
+              className="flex items-center space-x-1.5 min-h-[40px] text-xs font-semibold border border-hairline hover:border-primary/50 shadow-sm"
+            >
+              <Globe className="w-3.5 h-3.5 text-primary" />
+              <span>pntoursandtravel.com</span>
+              <ExternalLink className="w-3 h-3 text-muted ml-0.5" />
+            </Button>
+          </a>
+
           <Link href="/account/trips" className="hidden sm:inline-block">
             <Button variant="primary" size="sm" className="flex items-center space-x-1.5 min-h-[40px]">
               <Luggage className="w-3.5 h-3.5" />
@@ -270,8 +288,25 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
               </div>
             </div>
 
-            {/* Action Button */}
-            <div className="pt-2">
+            {/* Action Buttons */}
+            <div className="pt-2 space-y-2">
+              <a
+                href="https://pntoursandtravel.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Button
+                  variant="secondary-light"
+                  size="md"
+                  className="w-full flex items-center justify-center space-x-2 min-h-[44px] border border-hairline font-semibold"
+                >
+                  <Globe className="w-4 h-4 text-primary" />
+                  <span>Visit pntoursandtravel.com</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-muted" />
+                </Button>
+              </a>
+
               <Link href="/account/trips" onClick={() => setMobileMenuOpen(false)} className="block">
                 <Button variant="primary" size="md" className="w-full flex items-center justify-center space-x-2 min-h-[48px]">
                   <Luggage className="w-4 h-4" />
