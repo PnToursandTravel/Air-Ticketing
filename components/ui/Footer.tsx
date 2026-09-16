@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award, Globe, ExternalLink } from "lucide-react";
+import { Plane, Phone, Mail, MapPin, ShieldCheck, Briefcase, Lock, Award, Globe, ExternalLink, UserPlus } from "lucide-react";
 import { Button } from "./Button";
 
 export const Footer: React.FC = () => {
@@ -24,17 +24,23 @@ export const Footer: React.FC = () => {
                   className="h-10 w-auto object-contain rounded-sm"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-pill bg-primary/10 flex items-center justify-center p-1.5 border border-primary/20">
-                  <Plane className="w-4 h-4 text-primary" />
+                <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <Plane className="w-5 h-5 text-primary" />
                 </div>
               )}
-              <span className="text-lg font-bold text-ink tracking-tight font-sans">
-                PN Tours & Travel
-              </span>
+              <div>
+                <span className="text-base font-bold text-ink tracking-tight block">
+                  PN Tours and Travel
+                </span>
+                <span className="text-[10px] tracking-wider uppercase text-muted font-semibold">
+                  Air Ticketing & Reservation Platform
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-muted leading-relaxed max-w-sm">
-              Worldwide air ticketing, corporate travel bookings, and accredited flight reservation solutions. Built with institutional reliability, immediate e-ticketing, and transparent fare conditions.
+            <p className="text-xs text-muted leading-relaxed max-w-sm">
+              Official IATA-aligned online air travel ticketing portal of PN Tours and Travel Ltd. Search, compare, and instantly book scheduled commercial flights worldwide.
             </p>
+
             <div className="pt-2 space-y-2 text-xs text-body font-mono">
               <div className="flex items-center space-x-2">
                 <Phone className="w-3.5 h-3.5 text-primary" />
@@ -50,22 +56,26 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-1">
+              <div className="flex items-center space-x-2 text-xs text-muted">
+                <Award className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>Certified Agency Portal</span>
+              </div>
+              
               <a
                 href="https://pntoursandtravel.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block"
-                title="Visit Official PN Tours and Travel Website"
               >
                 <Button
                   variant="secondary-light"
                   size="sm"
-                  className="flex items-center space-x-2 border border-hairline hover:border-primary/50 shadow-sm text-xs font-semibold"
+                  className="flex items-center space-x-1.5 text-xs border border-hairline font-semibold hover:border-primary/50"
                 >
                   <Globe className="w-3.5 h-3.5 text-primary" />
                   <span>Visit pntoursandtravel.com</span>
-                  <ExternalLink className="w-3 h-3 text-muted ml-0.5" />
+                  <ExternalLink className="w-3 h-3 text-muted" />
                 </Button>
               </a>
             </div>
@@ -125,9 +135,10 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   href="/agent/login"
-                  className="hover:text-primary transition-colors text-xs text-muted"
+                  className="hover:text-primary transition-colors flex items-center space-x-1.5"
                 >
-                  New Agency Application
+                  <UserPlus className="w-3.5 h-3.5 text-primary" />
+                  <span>New Agency Application</span>
                 </Link>
               </li>
               <li>
