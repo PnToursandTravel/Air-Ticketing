@@ -28,13 +28,13 @@ export const FlightCard: React.FC<FlightCardProps> = ({
 
   return (
     <>
-      <div className="bg-surface-card rounded-xl p-4 sm:p-6 border border-hairline hover:border-primary/40 transition-all duration-200 shadow-soft-drop flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 hover:border-primary/50 transition-all duration-200 shadow-sm hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 group">
         {/* Left Side: Airline, Times, Layovers */}
         <div className="flex-1 space-y-3.5">
           {/* Top Airline Header */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
-              <div className="w-8 h-8 rounded-pill bg-surface-soft flex items-center justify-center font-mono font-bold text-xs text-primary flex-shrink-0 border border-hairline">
+              <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center font-mono font-bold text-xs text-primary flex-shrink-0 border border-slate-200 group-hover:border-primary/40 transition-colors">
                 {offer.validatingAirlineCode}
               </div>
               <div className="flex flex-col truncate">
@@ -134,12 +134,12 @@ export const FlightCard: React.FC<FlightCardProps> = ({
 
           <div className="w-full sm:w-auto">
             <Button
-              variant="primary"
+              variant="pill-cta"
               size="md"
               onClick={() => onSelectOffer(offer)}
-              className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-6 min-h-[46px]"
+              className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-6 min-h-[46px] shadow-md"
             >
-              <span>Select Flight</span>
+              <span>View Deal</span>
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>

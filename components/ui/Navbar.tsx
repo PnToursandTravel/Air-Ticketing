@@ -40,7 +40,9 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const navClasses = "bg-canvas text-ink border-b border-hairline";
+  const navClasses = darkHero
+    ? "bg-slate-950/95 text-white border-b border-white/10 backdrop-blur-md"
+    : "bg-canvas text-ink border-b border-hairline";
 
   const linkActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -50,12 +52,12 @@ export const Navbar: React.FC<NavbarProps> = ({ darkHero = false }) => {
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-200 shadow-sm ${navClasses}`}>
       {/* Top utility bar */}
-      <div className="bg-surface-soft/80 border-b border-hairline py-1.5 px-4 sm:px-6 lg:px-8 text-xs">
+      <div className={`${darkHero ? "bg-slate-900/90 border-b border-white/10 text-white/70" : "bg-surface-soft/80 border-b border-hairline text-muted"} py-1.5 px-4 sm:px-6 lg:px-8 text-xs`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-muted">
+          <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-medium text-ink">IATA Accredited</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className={`font-medium ${darkHero ? "text-white" : "text-ink"}`}>IATA Accredited</span>
             </span>
             <span className="hidden sm:inline text-hairline">|</span>
             <span className="hidden sm:inline">24/7 Ticketing Desk</span>

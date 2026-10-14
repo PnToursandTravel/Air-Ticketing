@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plane,
   ShieldCheck,
-  Building2,
   Clock,
   Sparkles,
   ChevronRight,
@@ -19,29 +18,35 @@ import {
   Luggage,
   Calendar,
   Compass,
+  Globe,
+  ChevronDown,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 import { FlightSearchWidget } from "@/components/flights/FlightSearchWidget";
 import { FlightCard } from "@/components/flights/FlightCard";
+import { PartnersCarousel } from "@/components/flights/PartnersCarousel";
+import { PlaneBanner } from "@/components/flights/PlaneBanner";
+import { FlightPricingGuide } from "@/components/flights/FlightPricingGuide";
 import { Currency, FlightOffer, FlightSearchRequest } from "@/types";
 import { flightProvider } from "@/lib/flights/mock-provider";
 import { BookingService } from "@/lib/bookings/booking-service";
 import { useCurrency } from "@/lib/context/CurrencyContext";
+import { formatMoney } from "@/lib/utils";
 import Link from "next/link";
 
 export default function HomePage() {
   const router = useRouter();
-  const { currency, format } = useCurrency();
+  const { currency, setCurrency, format } = useCurrency();
 
   const [isSearching, setIsSearching] = useState(false);
   const [offers, setOffers] = useState<FlightOffer[]>([]);
   const [activeFilterStops, setActiveFilterStops] = useState<string>("ALL");
   const [selectedAirline, setSelectedAirline] = useState<string>("ALL");
-  const [sortBy, setSortBy] = useState<"PRICE" | "DURATION">("PRICE");
+  const [sortTab, setSortTab] = useState<"CHEAPEST" | "BEST" | "FASTEST">("BEST");
   const [hasSearched, setHasSearched] = useState(false);
   const [currentSearch, setCurrentSearch] = useState<FlightSearchRequest | null>(null);
 
@@ -81,7 +86,7 @@ export default function HomePage() {
       originCode: "EBB",
       basePriceMinorUSD: 24000,
       airline: "Uganda Airlines & Kenya Airways",
-      image: "/images/destinations/nairobi.jpg",
+      image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80",
       tag: "Short Haul",
     },
     {
@@ -185,154 +190,256 @@ export default function HomePage() {
   };
 
   // Filter and sort offers
-  const filteredOffers = offers
-    .filter((o) => {
-      if (activeFilterStops === "NON_STOP" && o.stops !== 0) return false;
-      if (activeFilterStops === "ONE_STOP" && o.stops !== 1) return false;
-      if (selectedAirline !== "ALL" && o.validatingAirlineCode !== selectedAirline) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortBy === "PRICE") return a.price.totalMinor - b.price.totalMinor;
-      return a.totalDurationMinutes - b.totalDurationMinutes;
-    });
+  const filteredOffers = useMemo(() => {
+    return offers
+      .filter((o) => {
+        if (activeFilterStops === "NON_STOP" && o.stops !== 0) return false;
+        if (activeFilterStops === "ONE_STOP" && o.stops !== 1) return false;
+        if (selectedAirline !== "ALL" && o.validatingAirlineCode !== selectedAirline) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortTab === "CHEAPEST") {
+          return a.price.totalMinor - b.price.totalMinor;
+        }
+        if (sortTab === "FASTEST") {
+          return a.totalDurationMinutes - b.totalDurationMinutes;
+        }
+        // "BEST": weighted score of price and duration
+        const aScore = a.price.totalMinor + a.totalDurationMinutes * 50;
+        const bScore = b.price.totalMinor + b.totalDurationMinutes * 50;
+        return aScore - bScore;
+      });
+  }, [offers, activeFilterStops, selectedAirline, sortTab]);
+
+  // Derived statistics for sort cards
+  const cheapestPriceMinor = useMemo(() => {
+    if (offers.length === 0) return 0;
+    return Math.min(...offers.map((o) => o.price.totalMinor));
+  }, [offers]);
+
+  const fastestDurationMinutes = useMemo(() => {
+    if (offers.length === 0) return 0;
+    return Math.min(...offers.map((o) => o.totalDurationMinutes));
+  }, [offers]);
+
+  const formatHoursMins = (minutes: number) => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m}m`;
+  };
 
   return (
-    <div className="flex-1 flex flex-col bg-canvas">
+    <div className="flex-1 flex flex-col bg-canvas min-h-screen">
       {/* Top Navbar */}
       <Navbar darkHero={false} />
 
-      {/* Hero Section: Crisp White Canvas with Deep Navy and Royal Gold Branding */}
-      <section className="bg-canvas text-ink pt-14 pb-28 px-4 sm:px-8 border-b border-hairline relative overflow-hidden">
-        {/* Subtle geometric dot pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#07111f12_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />
+      {/* 1. Main Hero Shell: Rounded Dark Card Inspired by BestFlightsPrices */}
+      <section className="p-2 sm:p-4 md:p-6 pb-0 max-w-[1440px] mx-auto w-full relative z-30">
+        <div className="relative rounded-2xl md:rounded-3xl bg-gradient-to-b from-[#081830] via-[#0b2244] to-[#040e1c] text-white p-5 sm:p-8 md:p-12 pb-28 sm:pb-36 md:pb-40 shadow-2xl border border-slate-800/80">
+          {/* Subtle Ambient Background Gradients */}
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none rounded-2xl md:rounded-3xl" />
 
-        <div className="max-w-7xl mx-auto relative z-10 space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-4">
-            {/* Left Hero Content */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="flex items-center space-x-2">
-                <Badge variant="pill">
-                  IATA Industry Ticketing Standards
-                </Badge>
-                <span className="hidden sm:inline-flex text-xs text-muted font-mono">
-                  • 400+ Airlines
-                </span>
+          <div className="relative z-10 max-w-5xl mx-auto space-y-6 sm:space-y-8">
+            {/* Hero Top Title & Value Proposition */}
+            <div className="text-center space-y-3 pt-2">
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-white/90 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span>Institutional Air Ticketing & Global GDS</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-normal font-sans tracking-tight text-ink leading-[1.08]">
-                Air travel, booked with <span className="text-primary font-medium">quiet precision.</span>
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-sans tracking-tight text-white leading-[1.08]">
+                Explore Unbeatable Flight Prices.
               </h1>
 
-              <p className="text-sm sm:text-base lg:text-lg text-body max-w-xl leading-relaxed">
-                Direct airline flight search, corporate travel management, and instant electronic ticket receipts. Direct access to international carriers with guaranteed PNR issuance.
+              <p className="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+                Compare real-time airline fares, institutional GDS inventory, and guaranteed PNR ticketing across 400+ carriers worldwide.
               </p>
-
-              {/* Traveler CTAs */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <a href="#flight-search" className="w-full sm:w-auto">
-                  <Button variant="pill-cta" className="w-full justify-center min-h-[48px]">
-                    Search Flights Now
-                  </Button>
-                </a>
-                <a href="#featured-deals" className="w-full sm:w-auto">
-                  <Button variant="secondary-light" size="lg" className="w-full justify-center min-h-[48px]">
-                    Explore Top Deals
-                  </Button>
-                </a>
-              </div>
             </div>
 
-            {/* Right Hero: Layered Product-UI Mockup Card (#16181c) */}
-            <div className="lg:col-span-5 relative">
-              <div className="bg-surface-dark-elevated rounded-xl p-5 sm:p-8 border border-white/15 shadow-2xl space-y-5 sm:space-y-6 transform hover:-translate-y-1 transition-transform">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-pill bg-primary/20 flex items-center justify-center text-primary font-mono font-bold text-xs flex-shrink-0">
-                      EK
-                    </div>
-                    <div>
-                      <span className="font-bold text-sm text-on-dark block">Emirates EK730</span>
-                      <span className="text-xs text-on-dark-soft font-mono">Boeing 777-300ER • Scheduled</span>
-                    </div>
-                  </div>
-                  <Badge variant="semantic-up">Non-stop</Badge>
-                </div>
-
-                <div className="grid grid-cols-3 items-center text-center">
-                  <div className="text-left">
-                    <span className="font-mono text-xl sm:text-2xl font-bold text-on-dark block">15:30</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-on-dark-soft uppercase">EBB • Entebbe</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-mono text-on-dark-soft">5h 15m</span>
-                    <Plane className="w-4 h-4 text-primary my-1" />
-                    <span className="text-[10px] text-semantic-up font-semibold">Direct Route</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-mono text-xl sm:text-2xl font-bold text-on-dark block">21:45</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-on-dark-soft uppercase">DXB • Dubai</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-                  <span className="text-on-dark-soft">Guaranteed E-Ticket Pass</span>
-                  <span className="font-mono font-bold text-base text-primary">PNR: PNJDBE94</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Popular Route Chips (Smooth Touch Flick on Mobile) */}
-          <div className="pt-2 space-y-2">
-            <span className="text-xs uppercase font-mono tracking-wider text-muted block">
-              Popular Flight Routes
-            </span>
-            <div className="flex flex-nowrap sm:flex-wrap overflow-x-auto pb-2 sm:pb-0 touch-scroll gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {/* Quick Popular Route Chips - Placed cleanly above search */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-1 pb-1">
+              <span className="font-semibold uppercase tracking-wider text-slate-400 text-[11px] mr-1 select-none">
+                Popular:
+              </span>
               {popularRoutes.map((r) => (
                 <button
                   key={`${r.from}-${r.to}`}
                   onClick={() => handleQuickRoute(r.from, r.to)}
-                  className="px-3.5 py-1.5 rounded-pill bg-surface-card hover:bg-surface-soft text-ink text-xs font-medium border border-hairline transition-colors flex items-center space-x-1.5 group flex-shrink-0 min-h-[36px]"
+                  className="px-3 py-1 rounded-full bg-white/10 hover:bg-primary/20 hover:text-primary text-white text-[11px] font-medium border border-white/10 transition-colors flex items-center space-x-1 cursor-pointer"
                 >
-                  <Compass className="w-3 h-3 text-primary group-hover:rotate-45 transition-transform flex-shrink-0" />
-                  <span className="whitespace-nowrap">{r.label}</span>
+                  <span>{r.label}</span>
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* Embedded Search Widget */}
-          <div id="flight-search" className="pt-4">
-            <FlightSearchWidget
-              onSearch={handleSearch}
-              isLoading={isSearching}
-              initialValues={currentSearch || undefined}
-            />
+            {/* Central Unified Search Form Component */}
+            <div id="flight-search" className="pt-1">
+              <FlightSearchWidget
+                onSearch={handleSearch}
+                isLoading={isSearching}
+                initialValues={currentSearch || undefined}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Flight Search Results Stream */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
-        {/* Results Header & Advanced Filter Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-hairline">
+      {/* 2. Partners Carousel: Airlines & Global Aggregators */}
+      <PartnersCarousel />
+
+      {/* 3. Interactive Plane Showcase Banner */}
+      <PlaneBanner onSelectRoute={handleQuickRoute} />
+
+      {/* 4. Flight Search Results Stream (with Best / Cheapest / Fastest sort tabs) */}
+      <section id="flight-results" className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        {/* Results Header */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-normal font-sans tracking-tight text-ink">
+            <div className="flex items-center space-x-2">
+              <Badge variant="pill">Live Search Feed</Badge>
+              <span className="text-xs font-mono text-muted">
+                {currentSearch?.originCode} → {currentSearch?.destinationCode}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink mt-1">
               Available Flights
             </h2>
-            <p className="text-xs text-muted mt-1">
-              Showing {filteredOffers.length} available flight options with live seat inventories
+            <p className="text-xs text-muted mt-0.5">
+              Showing {filteredOffers.length} options with guaranteed seat confirmation
             </p>
           </div>
 
-          {/* Filter Bar */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center space-x-2 text-xs text-muted font-medium">
+            <span>Currency:</span>
+            <span className="font-bold text-primary font-mono text-sm">{currency}</span>
+          </div>
+        </div>
+
+        {/* 3 Summary Sorting Cards: Cheapest / Best / Fastest (BestFlightsPrices Style) */}
+        {offers.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            {/* Cheapest Card */}
+            <button
+              type="button"
+              onClick={() => setSortTab("CHEAPEST")}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                sortTab === "CHEAPEST"
+                  ? "bg-primary/10 border-primary ring-2 ring-primary/20 shadow-md"
+                  : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Cheapest
+                </span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              </div>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="text-xl font-bold font-mono text-ink">
+                  {cheapestPriceMinor ? formatMoney(cheapestPriceMinor, currency) : "—"}
+                </span>
+                <span className="text-[11px] text-muted">Lowest fare</span>
+              </div>
+            </button>
+
+            {/* Best Card */}
+            <button
+              type="button"
+              onClick={() => setSortTab("BEST")}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                sortTab === "BEST"
+                  ? "bg-primary/10 border-primary ring-2 ring-primary/20 shadow-md"
+                  : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Best Value
+                </span>
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+              </div>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="text-xl font-bold font-mono text-ink">Recommended</span>
+                <span className="text-[11px] text-muted">Time & cost balanced</span>
+              </div>
+            </button>
+
+            {/* Fastest Card */}
+            <button
+              type="button"
+              onClick={() => setSortTab("FASTEST")}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                sortTab === "FASTEST"
+                  ? "bg-primary/10 border-primary ring-2 ring-primary/20 shadow-md"
+                  : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Fastest
+                </span>
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="text-xl font-bold font-mono text-ink">
+                  {fastestDurationMinutes ? formatHoursMins(fastestDurationMinutes) : "—"}
+                </span>
+                <span className="text-[11px] text-muted">Shortest flight</span>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* Filter Bar Controls */}
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-slate-500 flex items-center space-x-1 mr-1">
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Filter:</span>
+            </span>
+
+            {/* Stops Filter Buttons */}
+            <div className="inline-flex p-1 bg-white rounded-xl border border-slate-200 text-xs">
+              <button
+                onClick={() => setActiveFilterStops("ALL")}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors ${
+                  activeFilterStops === "ALL"
+                    ? "bg-ink text-white font-bold"
+                    : "text-slate-600 hover:text-ink"
+                }`}
+              >
+                All Stops
+              </button>
+              <button
+                onClick={() => setActiveFilterStops("NON_STOP")}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors ${
+                  activeFilterStops === "NON_STOP"
+                    ? "bg-ink text-white font-bold"
+                    : "text-slate-600 hover:text-ink"
+                }`}
+              >
+                Direct Only
+              </button>
+              <button
+                onClick={() => setActiveFilterStops("ONE_STOP")}
+                className={`px-3 py-1 rounded-lg font-semibold transition-colors ${
+                  activeFilterStops === "ONE_STOP"
+                    ? "bg-ink text-white font-bold"
+                    : "text-slate-600 hover:text-ink"
+                }`}
+              >
+                1 Stop
+              </button>
+            </div>
+
             {/* Airline Dropdown */}
             <select
               value={selectedAirline}
               onChange={(e) => setSelectedAirline(e.target.value)}
-              className="h-9 px-3 bg-surface-strong text-ink text-xs font-semibold rounded-pill border-none outline-none cursor-pointer hover:bg-hairline transition-colors"
+              className="h-9 px-3 bg-white text-ink text-xs font-semibold rounded-xl border border-slate-200 outline-none cursor-pointer hover:border-primary/40 transition-colors"
             >
               <option value="ALL">All Airlines</option>
               <option value="EK">Emirates (EK)</option>
@@ -342,61 +449,29 @@ export default function HomePage() {
               <option value="KL">KLM Royal Dutch (KL)</option>
               <option value="BA">British Airways (BA)</option>
             </select>
-
-            {/* Stops Filter */}
-            <div className="inline-flex p-1 bg-surface-strong rounded-pill text-xs">
-              <button
-                onClick={() => setActiveFilterStops("ALL")}
-                className={`px-3 py-1 rounded-pill font-medium transition-colors ${
-                  activeFilterStops === "ALL"
-                    ? "bg-canvas text-ink shadow-sm font-bold"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setActiveFilterStops("NON_STOP")}
-                className={`px-3 py-1 rounded-pill font-medium transition-colors ${
-                  activeFilterStops === "NON_STOP"
-                    ? "bg-canvas text-ink shadow-sm font-bold"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                Direct Only
-              </button>
-              <button
-                onClick={() => setActiveFilterStops("ONE_STOP")}
-                className={`px-3 py-1 rounded-pill font-medium transition-colors ${
-                  activeFilterStops === "ONE_STOP"
-                    ? "bg-canvas text-ink shadow-sm font-bold"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                1 Stop
-              </button>
-            </div>
-
-            {/* Sort Toggle */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-9 px-3 bg-surface-strong text-ink text-xs font-semibold rounded-pill border-none outline-none cursor-pointer hover:bg-hairline transition-colors"
-            >
-              <option value="PRICE">Sort: Lowest Price</option>
-              <option value="DURATION">Sort: Shortest Duration</option>
-            </select>
           </div>
+
+          {(activeFilterStops !== "ALL" || selectedAirline !== "ALL") && (
+            <button
+              onClick={() => {
+                setActiveFilterStops("ALL");
+                setSelectedAirline("ALL");
+              }}
+              className="text-xs font-bold text-primary hover:underline"
+            >
+              Reset Filters
+            </button>
+          )}
         </div>
 
         {/* Flight Cards Stream */}
-        <div className="pt-8 space-y-4">
+        <div className="space-y-4">
           {filteredOffers.length === 0 ? (
-            <div className="bg-surface-soft rounded-xl p-12 text-center space-y-3 border border-hairline">
-              <Plane className="w-8 h-8 text-muted mx-auto" />
-              <h3 className="text-base font-bold text-ink">No flights matching active filters</h3>
+            <div className="bg-white rounded-2xl p-12 text-center space-y-3 border border-slate-200 shadow-sm">
+              <Plane className="w-10 h-10 text-muted mx-auto" />
+              <h3 className="text-lg font-bold text-ink">No flights matching active filters</h3>
               <p className="text-xs text-muted max-w-sm mx-auto">
-                Try clearing airline or stop filters to view all available flights.
+                Try resetting your stop or airline filter to view all available flights for this route.
               </p>
               <Button
                 variant="secondary-light"
@@ -422,21 +497,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Global Deals Section */}
-      <section id="featured-deals" className="py-20 px-4 sm:px-8 bg-surface-soft border-t border-hairline">
-        <div className="max-w-7xl mx-auto space-y-12">
+      {/* 5. Curated Top Destinations Grid ("Top Travel Destinations") */}
+      <section id="featured-deals" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-surface-soft/60 border-t border-hairline">
+        <div className="max-w-7xl mx-auto space-y-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <Badge variant="pill">Global Fares</Badge>
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-ink font-sans">
-                Top International Flight Deals
+              <Badge variant="pill">Top Destinations</Badge>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-ink">
+                Popular Flight Destinations from Entebbe
               </h2>
-              <p className="text-sm text-muted">
-                Hand-picked flight specials with confirmed live availability and guaranteed ticket issuance.
+              <p className="text-xs sm:text-sm text-muted">
+                Confirmed live availability, instant booking reference, and direct IATA ticketing.
               </p>
             </div>
+
             <span className="text-xs font-mono text-muted">
-              Currency: <span className="text-primary font-bold">{currency}</span>
+              Display Currency: <span className="text-primary font-bold">{currency}</span>
             </span>
           </div>
 
@@ -445,24 +521,25 @@ export default function HomePage() {
               <div
                 key={deal.city}
                 onClick={() => handleQuickRoute(deal.originCode, deal.airportCode)}
-                className="bg-surface-card rounded-xl overflow-hidden border border-hairline shadow-soft-drop hover:shadow-xl hover:border-primary/40 transition-all duration-200 cursor-pointer group flex flex-col justify-between"
+                className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
               >
-                <div className="h-44 w-full relative overflow-hidden bg-surface-soft">
+                <div className="h-48 w-full relative overflow-hidden bg-slate-100">
                   <img
                     src={deal.image}
                     alt={deal.city}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80";
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80";
                     }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 right-3">
-                    <span className="bg-canvas/90 backdrop-blur-sm text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-pill border border-hairline">
+                    <span className="bg-white/95 backdrop-blur-sm text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
                       {deal.tag}
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3">
-                    <span className="bg-canvas/90 backdrop-blur-sm text-ink text-xs font-mono font-bold px-2.5 py-1 rounded-md border border-hairline">
+                    <span className="bg-slate-900/90 backdrop-blur-sm text-white text-xs font-mono font-bold px-2.5 py-1 rounded-lg border border-white/10 shadow-sm">
                       {deal.originCode} → {deal.airportCode}
                     </span>
                   </div>
@@ -473,10 +550,10 @@ export default function HomePage() {
                     <h3 className="font-bold text-base text-ink group-hover:text-primary transition-colors">
                       {deal.city}
                     </h3>
-                    <span className="text-xs text-muted block">{deal.airline}</span>
+                    <span className="text-xs text-muted block mt-0.5">{deal.airline}</span>
                   </div>
 
-                  <div className="pt-2 border-t border-hairline flex items-center justify-between">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase font-mono text-muted block">Fares from</span>
                       <span className="font-mono font-bold text-lg text-primary">
@@ -484,8 +561,12 @@ export default function HomePage() {
                       </span>
                     </div>
 
-                    <Button variant="secondary-light" size="sm" className="group-hover:bg-primary group-hover:text-on-primary transition-colors">
-                      <span>Book Flight</span>
+                    <Button
+                      variant="secondary-light"
+                      size="sm"
+                      className="group-hover:bg-primary group-hover:text-on-primary group-hover:border-primary transition-colors text-xs font-bold"
+                    >
+                      <span>View Deals</span>
                       <ArrowRight className="w-3.5 h-3.5 ml-1" />
                     </Button>
                   </div>
@@ -496,50 +577,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Global Airline Network Section */}
-      <section className="py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <Badge variant="pill">Direct Carrier Network</Badge>
-          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-ink font-sans">
-            Accredited with Premier Global Airlines
-          </h2>
-          <p className="text-sm text-muted">
-            Direct airline ticketing authorities, verified ticket prefixes, and standard IATA baggage allowances across all cabins.
-          </p>
-        </div>
+      {/* 6. Educational Transparency Guide: "How Flight Prices Are Determined" */}
+      <FlightPricingGuide />
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          {[
-            { name: "Emirates", code: "EK", hub: "Dubai (DXB)" },
-            { name: "Uganda Airlines", code: "UR", hub: "Entebbe (EBB)" },
-            { name: "Qatar Airways", code: "QR", hub: "Doha (DOH)" },
-            { name: "Kenya Airways", code: "KQ", hub: "Nairobi (NBO)" },
-            { name: "KLM Royal Dutch", code: "KL", hub: "Amsterdam (AMS)" },
-            { name: "British Airways", code: "BA", hub: "London (LHR)" },
-            { name: "Ethiopian Airlines", code: "ET", hub: "Addis Ababa (ADD)" },
-            { name: "Turkish Airlines", code: "TK", hub: "Istanbul (IST)" },
-          ].map((airline) => (
-            <div
-              key={airline.code}
-              className="bg-surface-card p-4 sm:p-6 rounded-xl border border-hairline hover:border-primary/40 transition-all flex items-center space-x-3.5 shadow-soft-drop"
-            >
-              <div className="w-10 h-10 rounded-pill bg-surface-soft flex items-center justify-center font-mono font-bold text-xs text-primary border border-hairline">
-                {airline.code}
-              </div>
-              <div>
-                <span className="font-bold text-sm text-ink block">{airline.name}</span>
-                <span className="text-[11px] text-muted font-mono">{airline.hub}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Trust & Guarantees Section */}
-      <section className="bg-surface-soft py-20 px-4 sm:px-8 border-y border-hairline">
+      {/* 7. Institutional Trust & Accreditation */}
+      <section className="bg-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-hairline">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center text-primary">
+            <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-base text-ink">Guaranteed Instant PNR</h3>
@@ -549,7 +594,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center text-primary">
+            <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
               <TrendingDown className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-base text-ink">Transparent Pricing</h3>
@@ -559,7 +604,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center text-primary">
+            <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
               <Award className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-base text-ink">IATA Standards</h3>
@@ -569,38 +614,39 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <div className="w-10 h-10 rounded-pill bg-primary/10 flex items-center justify-center text-primary">
+            <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
               <PhoneCall className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-base text-ink">24/7 Ticketing Desk</h3>
             <p className="text-xs text-muted leading-relaxed">
-              Reach our active reservation team directly at <span className="font-mono text-ink font-bold">+256 785360444</span> for immediate flight assistance.
+              Reach our active reservation team directly at{" "}
+              <a href="tel:+256785360444" className="font-mono text-primary font-bold hover:underline">
+                +256 785360444
+              </a>{" "}
+              for immediate flight assistance.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Pre-footer CTA Band */}
-      <section className="bg-canvas text-ink py-20 sm:py-24 px-4 sm:px-8 border-t border-hairline text-center relative overflow-hidden">
-        {/* Subtle geometric dot pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#07111f12_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />
+      {/* 8. Pre-footer CTA */}
+      <section className="bg-slate-900 text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
         <div className="max-w-2xl mx-auto space-y-4 relative z-10">
-          <Badge variant="pill">
-            24/7 Flight Support
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal font-sans tracking-tight text-ink">
+          <Badge variant="pill">24/7 Flight Support</Badge>
+          <h2 className="text-2xl sm:text-4xl font-bold font-sans tracking-tight text-white">
             Ready to book your next flight?
           </h2>
-          <p className="text-sm sm:text-base text-body max-w-lg mx-auto leading-relaxed">
-            Book online for instant confirmation or call our international ticketing hotline at{" "}
-            <a href="tel:+256785360444" className="font-mono text-ink hover:text-primary font-bold transition-colors">
+          <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+            Search online for instant confirmation or speak directly with our international flight desk at{" "}
+            <a href="tel:+256785360444" className="font-mono text-primary font-bold hover:underline">
               +256 785360444
             </a>.
           </p>
-          <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto sm:max-w-none">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="#flight-search" className="w-full sm:w-auto">
-              <Button variant="pill-cta" className="w-full justify-center min-h-[48px] shadow-md">
+              <Button variant="pill-cta" className="w-full sm:w-auto px-8 min-h-[48px] shadow-lg">
                 Search Flights Now
               </Button>
             </a>
@@ -608,7 +654,7 @@ export default function HomePage() {
               <Button
                 variant="secondary-light"
                 size="lg"
-                className="w-full justify-center min-h-[48px] border border-hairline hover:border-primary/50 shadow-sm flex items-center space-x-2"
+                className="w-full sm:w-auto px-6 min-h-[48px] bg-white/10 hover:bg-white/20 text-white border-white/20 flex items-center justify-center space-x-2"
               >
                 <Phone className="w-4 h-4 text-primary" />
                 <span>Call +256 785360444</span>

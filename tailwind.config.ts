@@ -78,6 +78,33 @@ const config: Config = {
       },
       boxShadow: {
         "soft-drop": "0 4px 12px rgba(0, 0, 0, 0.04)",
+        "pill-glow": "0 10px 25px -5px rgba(212, 175, 55, 0.3)",
+        "card-elevated": "0 20px 40px -15px rgba(2, 6, 23, 0.25)",
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        "float-alt": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(6px)" },
+        },
+        pulseGlow: {
+          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.05)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 28s linear infinite",
+        float: "float 4s ease-in-out infinite",
+        "float-delayed": "float 4s ease-in-out 2s infinite",
+        "float-alt": "float-alt 5s ease-in-out 1s infinite",
+        "pulse-glow": "pulseGlow 3s ease-in-out infinite",
       },
     },
   },
